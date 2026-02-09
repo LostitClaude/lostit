@@ -125,6 +125,9 @@
  background-position: center top;
  background-size: cover;
  transform: translateZ(0);
+ will-change: transform;
+ backface-visibility: hidden;
+ -webkit-backface-visibility: hidden;
  }
 
  @media (min-width: 1280px){
@@ -204,6 +207,8 @@
  position:absolute;
  inset:-2px;
  pointer-events:none;
+ will-change: transform;
+ transform: translateZ(0);
 
  /* ✅ Un poco más visible el grid (pero suave) */
  opacity: 0.42;
@@ -315,6 +320,8 @@
   width: max-content;
   animation: marqueeScroll 26s linear infinite;
   will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .marquee__group{
@@ -392,8 +399,6 @@
  .premium-card {
  background: rgba(255, 255, 255, 0.055);
  border: 1px solid rgba(255, 255, 255, 0.10);
- backdrop-filter: blur(10px);
- -webkit-backdrop-filter: blur(10px);
  transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
  position: relative;
  overflow: hidden;
@@ -502,10 +507,8 @@
  border-radius: 1.75rem;
 
  /* 🔥 Más presencia sin cambiar layout */
- background: rgba(255,255,255,0.05);
+ background: rgba(20,14,38,0.92);
  border: 1px solid rgba(255,255,255,0.12);
- backdrop-filter: blur(10px);
- -webkit-backdrop-filter: blur(10px);
 
  box-shadow:
  0 18px 60px rgba(0,0,0,0.40),
@@ -647,8 +650,8 @@
  }
 
  /* Simple reveal */
- .reveal{ opacity:0; transform: translateY(14px); transition: opacity 600ms ease, transform 600ms ease; }
- .reveal.is-visible{ opacity:1; transform: translateY(0); }
+ .reveal{ opacity:0; transform: translateY(14px) translateZ(0); transition: opacity 600ms ease, transform 600ms ease; will-change: opacity, transform; }
+ .reveal.is-visible{ opacity:1; transform: translateY(0) translateZ(0); }
  
  /* =========================================================
  POWER-UP (solo visual): hacemos que "la petemos" 😄
@@ -986,7 +989,7 @@
 <i class="fa-solid fa-phone text-dhl"></i>
 </div>
 <div>
-<div class="text-xs sm:text-sm font-bold text-white/90 leading-tight whitespace-nowrap" data-i18n="pill3_title">Chat de soporte</div>
+<div class="text-xs sm:text-sm font-bold text-dhl leading-tight whitespace-nowrap" data-i18n="pill3_title">Chat de soporte</div>
 </div>
 </div>
 </div>
@@ -1151,7 +1154,7 @@
 
 <div class="stat-pill">
  <div class="text-sm text-dhl font-semibold" data-i18n="hotel_stat3_label">Chat de soporte</div>
- <div class="text-base sm:text-lg font-extrabold text-white mt-1" data-i18n="hotel_stat3_value">24H</div>
+ <div class="text-base sm:text-lg font-extrabold text-white mt-1" data-i18n="hotel_stat3_value">Online</div>
 </div>
 </div>
 <ul class="mt-7 space-y-3 text-white/85">
@@ -1202,7 +1205,7 @@
 </div>
 <div class="stat-pill">
 <div class="text-sm text-dhl font-semibold" data-i18n="guest_stat3_label">Chat de soporte</div>
-<div class="text-lg font-extrabold text-white mt-1" data-i18n="guest_stat3_value">24H</div>
+<div class="text-lg font-extrabold text-white mt-1" data-i18n="guest_stat3_value">Online</div>
 </div>
 </div>
 
@@ -1965,7 +1968,7 @@
  hotel_stat2_label: "Coste para el hotel",
  hotel_stat2_value: "0€",
  hotel_stat3_label: "Chat de soporte",
- hotel_stat3_value: "24H",
+ hotel_stat3_value: "Online",
  hotel_b1: "<b>Devolución rapida</b>: Sin llamar al cliente, sin enviarle un email y sin medir ni pesar los envíos.",
  hotel_b2: "<b>Control</b>: tracking, notificaciones y todo centralizado.",
  hotel_b3: "<b>Tu imagen</b>: conviertes un “problema” en un servicio premium.",
@@ -1980,7 +1983,7 @@
  guest_stat2_label: "Transparencia",
  guest_stat2_value: "Tracking",
  guest_stat3_label: "Chat de soporte",
- guest_stat3_value: "24H",
+ guest_stat3_value: "Online",
  guest_b1: "<b>Pago simple</b>: sin llamadas raras ni correos eternos.",
  guest_b2: "<b>Seguridad</b>: envío con partner global y opciones de cobertura.",
  guest_b3: "<b>Velocidad</b>: tu objeto vuelve rápido a casa.",
@@ -2092,7 +2095,7 @@
  hotel_stat2_label: "Hotel cost",
  hotel_stat2_value: "€0",
  hotel_stat3_label: "Support chat",
- hotel_stat3_value: "24H",
+ hotel_stat3_value: "Online",
  hotel_b1: "<b>Communication</b>: no need to contact the guest — no emails or calls.",
  hotel_b2: "<b>Control</b>: tracking, notifications and everything centralized.",
  hotel_b3: "<b>Your image</b>: you turn a “problem” into a premium service.",
@@ -2107,7 +2110,7 @@
  guest_stat2_label: "Transparency",
  guest_stat2_value: "Tracking",
  guest_stat3_label: "Support chat",
- guest_stat3_value: "24H",
+ guest_stat3_value: "Online",
  guest_b1: "<b>Simple payment</b>: no weird calls or endless emails.",
  guest_b2: "<b>Security</b>: global partner shipping with coverage options.",
  guest_b3: "<b>Speed</b>: your item gets home fast.",
@@ -2219,7 +2222,7 @@
  hotel_stat2_label: "Cost per a l’hotel",
  hotel_stat2_value: "0€",
  hotel_stat3_label: "Xat de suport",
- hotel_stat3_value: "24H",
+ hotel_stat3_value: "Online",
  hotel_b1: "<b>Comunicació</b>: no cal comunicar-te amb el client, ni emails ni trucades.",
  hotel_b2: "<b>Control</b>: tracking, notificacions i tot centralitzat.",
  hotel_b3: "<b>La teva imatge</b>: converteixes un “problema” en un servei premium.",
@@ -2234,7 +2237,7 @@
  guest_stat2_label: "Transparència",
  guest_stat2_value: "Tracking",
  guest_stat3_label: "Xat de suport",
- guest_stat3_value: "24H",
+ guest_stat3_value: "Online",
  guest_b1: "<b>Pagament simple</b>: sense trucades rares ni correus eterns.",
  guest_b2: "<b>Seguretat</b>: enviament amb partner global i opcions de cobertura.",
  guest_b3: "<b>Velocitat</b>: el teu objecte torna ràpid a casa.",
@@ -2336,7 +2339,7 @@
   hotel_stat2_label: "Coût pour l’hôtel",
   hotel_stat2_value: "0€",
   hotel_stat3_label: "Chat support",
-  hotel_stat3_value: "24H",
+  hotel_stat3_value: "Online",
   hotel_b1: "<b>Retour rapide</b>: sans appeler le client, sans lui envoyer un email et sans mesurer ni peser les envois.",
   hotel_b2: "<b>Contrôle</b>: suivi, notifications et tout centralisé.",
   hotel_b3: "<b>Votre image</b>: vous transformez un « problème » en un service premium.",
@@ -2350,7 +2353,7 @@
   guest_stat2_label: "Transparence",
   guest_stat2_value: "Suivi",
   guest_stat3_label: "Chat support",
-  guest_stat3_value: "24H",
+  guest_stat3_value: "Online",
   guest_b1: "<b>Paiement simple</b>: pas d’appels bizarres ni d’emails interminables.",
   guest_b2: "<b>Sécurité</b>: expédition avec partenaire global et options de couverture.",
   guest_b3: "<b>Vitesse</b>: votre objet rentre vite à la maison.",
@@ -2447,7 +2450,7 @@
   hotel_stat2_label: "Custo para o hotel",
   hotel_stat2_value: "0€",
   hotel_stat3_label: "Chat de suporte",
-  hotel_stat3_value: "24H",
+  hotel_stat3_value: "Online",
   hotel_b1: "<b>Devolução rápida</b>: sem ligar ao cliente, sem lhe enviar um email e sem medir nem pesar os envios.",
   hotel_b2: "<b>Controlo</b>: tracking, notificações e tudo centralizado.",
   hotel_b3: "<b>A tua imagem</b>: transformas um “problema” num serviço premium.",
@@ -2461,7 +2464,7 @@
   guest_stat2_label: "Transparência",
   guest_stat2_value: "Tracking",
   guest_stat3_label: "Chat de suporte",
-  guest_stat3_value: "24H",
+  guest_stat3_value: "Online",
   guest_b1: "<b>Pagamento simples</b>: sem chamadas estranhas nem emails eternos.",
   guest_b2: "<b>Segurança</b>: envio com parceiro global e opções de cobertura.",
   guest_b3: "<b>Velocidade</b>: o teu objeto volta rápido a casa.",

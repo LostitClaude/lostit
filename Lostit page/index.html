@@ -4,7 +4,29 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Lostit - El Superhéroe de los Objetos Olvidados</title>
+<title>Lostit — Gestión de objetos perdidos en hoteles | Envío DHL Express</title>
+<meta name="description" content="Lostit ayuda a hoteles a devolver objetos olvidados en 30 segundos. Sin costes, sin instalación. Envío con DHL Express, tracking y soporte 24h. +152 hoteles registrados."/>
+<meta name="robots" content="index, follow"/>
+<link rel="canonical" href="https://www.lostit.es/"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=&apos;http://www.w3.org/2000/svg&apos; viewBox=&apos;0 0 100 100&apos;><circle cx=&apos;50&apos; cy=&apos;50&apos; r=&apos;45&apos; fill=&apos;%23FFCC00&apos;/></svg>" type="image/svg+xml"/>
+<!-- Open Graph -->
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Lostit — Gestión de objetos perdidos en hoteles"/>
+<meta property="og:description" content="Devuelve objetos olvidados a tus huéspedes en 30 segundos. Envío con DHL Express, 0€ para el hotel, +152 hoteles registrados."/>
+<meta property="og:url" content="https://www.lostit.es/"/>
+<meta property="og:image" content="https://www.lostit.es/heroe.png"/>
+<meta property="og:locale" content="es_ES"/>
+<meta property="og:site_name" content="Lostit"/>
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Lostit — Gestión de objetos perdidos en hoteles"/>
+<meta name="twitter:description" content="Devuelve objetos olvidados a tus huéspedes en 30 segundos. Envío con DHL Express, 0€ para el hotel."/>
+<meta name="twitter:image" content="https://www.lostit.es/heroe.png"/>
+<!-- Preconnect -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com"/>
+<link rel="preconnect" href="https://logo.clearbit.com"/>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Montserrat:wght@700&amp;display=swap" rel="stylesheet"/>
@@ -82,6 +104,8 @@
  color:#fff;
  min-height:100vh;
  }
+
+ html{scroll-behavior:smooth;scroll-padding-top:5rem;}
 
  .page-bg{
  position:fixed;
@@ -726,6 +750,9 @@
 
 
 @media (prefers-reduced-motion: reduce) {
+  html{scroll-behavior:auto;}
+  .animate-float{animation:none !important;}
+  .reveal{transition:none !important;opacity:1 !important;transform:none !important;}
  }
 
 
@@ -786,7 +813,7 @@
 </head>
 <body class="antialiased font-sans selection:bg-dhl selection:text-black overflow-x-hidden">
 <div aria-hidden="true" class="page-bg"></div>
-<nav class="sticky top-0 w-full px-6 sm:px-8 lg:px-10 py-3 sm:py-4 flex justify-between items-center z-[100] glass-panel">
+<nav class="sticky top-0 w-full px-6 sm:px-8 lg:px-10 py-3 sm:py-4 flex justify-between items-center z-[100] glass-panel" aria-label="Main navigation">
 <div class="max-w-[1400px] w-full mx-auto flex justify-between items-center">
 <div class="flex items-center gap-6 md:gap-8">
 <div class="flex items-center gap-3 font-bold text-2xl tracking-tight text-white">
@@ -862,7 +889,7 @@
 <a class="text-xl font-medium text-white border-b border-white/10 pb-4" data-i18n="nav_solutions" href="#targets" onclick="toggleMobileMenu()">Soluciones</a>
 <a class="text-xl font-medium text-white border-b border-white/10 pb-4" data-i18n="nav_partner" href="#dhl" onclick="toggleMobileMenu()">Partnership</a>
 <div class="flex flex-col gap-4 mt-4">
-<button class="bg-dhl text-black font-bold px-7 py-3 rounded-xl text-lg w-full" data-i18n="nav_register">Registro mi hotel</button>
+<button class="bg-dhl text-black font-bold px-7 py-3 rounded-xl text-lg w-full" data-i18n="nav_register">Registrar mi hotel</button>
 <button class="bg-white/10 text-white px-6 py-3 rounded-xl text-lg w-full border border-white/10" data-i18n="nav_account">Mi cuenta</button>
 </div>
 </div>
@@ -933,7 +960,7 @@
 <div class="relative w-full flex justify-center">
 <div class="hero-shift hero-stack relative w-full max-w-[560px] lg:max-w-[760px]">
 <div class="hero-figure animate-float">
-<img alt="Superhero" class="w-full object-contain drop-shadow-2xl" src="heroe.png" style="max-height: clamp(320px, 56svh, 680px);"/>
+<img alt="Lostit - Superhéroe de objetos olvidados en hoteles" class="w-full object-contain drop-shadow-2xl" src="heroe.png" width="760" height="760" style="max-height: clamp(320px, 56svh, 680px);"/>
 </div>
 <div class="hero-pills flex flex-col gap-3 sm:gap-5">
 <div class="glass-panel px-4 py-2.5 rounded-xl flex items-center gap-3 pr-6 shadow-xl backdrop-blur-xl border border-white/10">
@@ -959,7 +986,7 @@
 <i class="fa-solid fa-phone text-dhl"></i>
 </div>
 <div>
-<div class="text-xs sm:text-sm font-bold text-white/90 leading-tight whitespace-nowrap" data-i18n="pill3_title">Chat de suporte 24h</div>
+<div class="text-xs sm:text-sm font-bold text-white/90 leading-tight whitespace-nowrap" data-i18n="pill3_title">Chat de soporte 24h</div>
 </div>
 </div>
 </div>
@@ -1855,7 +1882,7 @@
 </div>
 <div class="mt-10 divider-soft"></div>
 <div class="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-white/40">
-<p data-i18n="footer_copy">© 2024 Lostit Technologies. Todos los derechos reservados.</p>
+<p data-i18n="footer_copy">© 2025 Lostit Technologies. Todos los derechos reservados.</p>
 </div>
 </div>
 </footer>
@@ -1909,7 +1936,7 @@
  pill1_sub: "recogida en recepción",
  pill2_title: "Entrega 24-48h *",
  pill2_sub: "Etiqueta automática / Nº Tracking",
- pill3_title: "Chat de suporte 24h",
+ pill3_title: "Chat de soporte 24h",
 
  partners_kicker: "Confianza de líderes del sector",
 
@@ -2004,7 +2031,7 @@
  faq_a12: "No. Seleccionas el tipo de embalaje (sobre/caja) y el sistema calcula la tarifa y genera la etiqueta.",
 
  footer_desc: "La forma moderna de gestionar objetos perdidos con un flujo simple y logística global.",
- footer_copy: "© 2024 Lostit Technologies. Todos los derechos reservados.",
+ footer_copy: "© 2025 Lostit Technologies. Todos los derechos reservados.",
  footer_note: ""
  },
 
@@ -2131,7 +2158,7 @@
  faq_a12: "No. Select the packaging type (envelope/box) and the system calculates the price and generates the label.",
 
  footer_desc: "A modern way to manage lost & found with a simple flow and global logistics.",
- footer_copy: "© 2024 Lostit Technologies. All rights reserved.",
+ footer_copy: "© 2025 Lostit Technologies. All rights reserved.",
  footer_note: ""
  },
 
@@ -2258,7 +2285,7 @@
  faq_a12: "No. Seleccionas el tipus d’embalatge (sobre/caixa) i el sistema calcula la tarifa i genera l’etiqueta.",
 
  footer_desc: "La manera moderna de gestionar objectes perduts amb un flux simple i logística global.",
- footer_copy: "© 2024 Lostit Technologies. Tots els drets reservats.",
+ footer_copy: "© 2025 Lostit Technologies. Tots els drets reservats.",
  footer_note: ""
  },
  fr: {
@@ -2369,7 +2396,7 @@
   faq_q12: "Dois-je peser ou mesurer le colis ?",
   faq_a12: "Non. Vous choisissez le type d’emballage (enveloppe/boîte) et le système calcule le tarif et génère l’étiquette.",
   footer_desc: "La façon moderne de gérer les objets perdus avec un flux simple et une logistique mondiale.",
-  footer_copy: "© 2024 Lostit Technologies. Tous droits réservés.",
+  footer_copy: "© 2025 Lostit Technologies. Tous droits réservés.",
   footer_note: ""
  },
  pt: {
@@ -2480,7 +2507,7 @@
   faq_q12: "Tenho de pesar ou medir o pacote?",
   faq_a12: "Não. Escolhes o tipo de embalagem (envelope/caixa) e o sistema calcula a tarifa e gera a etiqueta.",
   footer_desc: "A forma moderna de gerir objetos perdidos com um fluxo simples e logística global.",
-  footer_copy: "© 2024 Lostit Technologies. Todos os direitos reservados.",
+  footer_copy: "© 2025 Lostit Technologies. Todos os direitos reservados.",
   footer_note: ""
  }
  };
@@ -2591,6 +2618,59 @@ let saved = null;
       img.classList.remove('w-auto','object-contain','max-h-9','sm:max-h-10');
     }catch(e){}
   };
+</script>
+
+<!-- Schema.org JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "name": "Lostit Technologies",
+      "url": "https://www.lostit.es",
+      "description": "Plataforma de gestión de objetos perdidos en hoteles con envío DHL Express.",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "availableLanguage": ["Spanish","English","Catalan","French","Portuguese"]
+      }
+    },
+    {
+      "@type": "WebSite",
+      "name": "Lostit",
+      "url": "https://www.lostit.es"
+    },
+    {
+      "@type": "Service",
+      "name": "Lostit",
+      "description": "Servicio de devolución de objetos perdidos en hoteles con logística DHL Express.",
+      "provider": {"@type": "Organization", "name": "Lostit Technologies"},
+      "areaServed": "Worldwide",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Registro de hotel",
+        "itemListElement": [{
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "EUR",
+          "description": "Registro gratuito para hoteles"
+        }]
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type":"Question","name":"¿Cuánto tarda en recogerse el paquete?","acceptedAnswer":{"@type":"Answer","text":"Tras el pago, solicitamos recogida con DHL en el hotel. Normalmente pasa el siguiente día laborable."}},
+        {"@type":"Question","name":"¿El hotel paga algo?","acceptedAnswer":{"@type":"Answer","text":"No. 0€ para el hotel: alta, panel y flujo automatizado. El envío lo paga el huésped."}},
+        {"@type":"Question","name":"¿Qué países cubre DHL?","acceptedAnswer":{"@type":"Answer","text":"Enviamos a prácticamente todo el mundo con DHL Express."}},
+        {"@type":"Question","name":"¿Cumple con RGPD?","acceptedAnswer":{"@type":"Answer","text":"Sí. Pedimos datos mínimos para gestionar el envío y aplicamos medidas de seguridad y acceso limitado."}},
+        {"@type":"Question","name":"¿Puedo empezar hoy?","acceptedAnswer":{"@type":"Answer","text":"Sí. Te registras en 30 segundos y te enviamos sobres y cajas DHL para empezar."}},
+        {"@type":"Question","name":"¿Tengo que pesar o medir el paquete?","acceptedAnswer":{"@type":"Answer","text":"No. Seleccionas el tipo de embalaje y el sistema calcula la tarifa y genera la etiqueta."}}
+      ]
+    }
+  ]
+}
 </script>
 </body>
 </html>

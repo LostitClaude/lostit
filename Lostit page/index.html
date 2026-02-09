@@ -84,8 +84,8 @@
 
  @media (max-width: 640px){
  :root{
- --pill-top: 140px;
- --pill-scale: 0.82;
+ --pill-top: 120px;
+ --pill-scale: 0.72;
  --pill-x: 0px;
  --pill-y: 0px;
  }
@@ -721,15 +721,15 @@
  }
 
  /* Smaller hero pills under the hero image */
- .hero-pills{ gap: 0.75rem; right: 12px; }
+ .hero-pills{ gap: 0.45rem; right: 8px; }
 
  /* Ensure pills never overflow viewport */
  .hero-pills .glass-panel{ max-width: calc(100vw - 28px) !important; }
  .hero-pills .whitespace-nowrap{ white-space: normal !important; }
  .hero-pills .glass-panel{
- padding: 0.55rem 0.85rem;
- padding-right: 1.05rem;
- border-radius: 0.95rem;
+ padding: 0.4rem 0.7rem;
+ padding-right: 0.85rem;
+ border-radius: 0.85rem;
  }
  .hero-pills .glass-panel .w-8.h-8{
  width: 2.0rem !important;
@@ -985,8 +985,8 @@
 </div>
 </div>
 <div class="glass-panel px-4 py-2.5 rounded-xl flex items-center gap-3 pr-6 shadow-xl backdrop-blur-xl border border-white/10">
-<div class="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 border border-white/15 shadow-lg">
-<i class="fa-solid fa-phone text-dhl"></i>
+<div class="bg-dhl text-black p-1.5 rounded-full w-8 h-8 flex items-center justify-center font-bold text-xs shadow-lg">
+<i class="fa-solid fa-phone"></i>
 </div>
 <div>
 <div class="text-xs sm:text-sm font-bold text-dhl leading-tight whitespace-nowrap" data-i18n="pill3_title">Chat de soporte</div>

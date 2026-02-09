@@ -1,0 +1,2596 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lostit - El Superhéroe de los Objetos Olvidados</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Montserrat:wght@700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script>
+ tailwind.config = {
+ theme: {
+ extend: {
+ fontFamily: {
+ sans: ['Inter', 'sans-serif'],
+ serif: ['Playfair Display', 'serif'],
+ mont: ['Montserrat', 'sans-serif'],
+ },
+ colors: {
+ dhl: '#FFCC00',
+ dhlred: '#D40511',
+ darkbg: '#05070a',
+ slate: { 800: '#1e293b', 900: '#0f172a' }
+ },
+ animation: {
+ 'float': 'float 5s ease-in-out infinite',
+ 'fade-in': 'fadeIn 0.25s ease-out forwards',
+ },
+ keyframes: {
+ float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-34px)' } },
+ fadeIn: { '0%': { opacity: '0', transform: 'translateY(-6px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+ }
+ }
+ }
+ }
+ </script>
+<style>:root{
+ --bg-focus: 86%;
+ --hero-x: -24px;
+ --pill-top: 210px;
+ --pill-x: 34px;
+ --pill-y: 0px;
+ --pill-scale: 1;
+ --pill-z: 50;
+ --hero-img-x: 0px;
+ --after-hero-overlap: 3.25rem;
+ --after-hero-pt: 2.75rem;
+ }
+
+ @media (max-width: 1023px){
+ :root{
+ --bg-focus: 72%;
+ --hero-img-x: -18px;
+ --pill-scale: 0.88;
+ --after-hero-overlap: 3.0rem;
+ --after-hero-pt: 2.75rem;
+ --pill-top: 220px;
+ }
+ }
+
+ @media (max-width: 640px){
+ :root{
+ --pill-top: 140px;
+ --pill-scale: 0.82;
+ --pill-x: 0px;
+ --pill-y: 0px;
+ }
+ }
+
+ @media (min-width: 1280px){
+ :root{
+ --hero-x: -138px;
+ --after-hero-overlap: 4.6rem;
+ --after-hero-pt: 3.5rem;
+ }
+ }
+
+ body{
+ background:#1a122e;
+ color:#fff;
+ min-height:100vh;
+ }
+
+ .page-bg{
+ position:fixed;
+ inset:0;
+ z-index:-50;
+ pointer-events:none;
+ background-color:#1a122e;
+ background-image:
+ linear-gradient(
+ to bottom,
+ rgba(17, 10, 31, 0.05) 0%,
+ rgba(17, 10, 31, 0.55) 70%,
+ #1a122e 100%
+ ),
+ url('background.png');
+ background-repeat:no-repeat;
+ background-position: center top;
+ background-size: cover;
+ transform: translateZ(0);
+ }
+
+ @media (min-width: 1280px){
+ .page-bg {
+ background-position: center 12%;
+ }
+ }
+
+ .hero-section{
+ padding-top: clamp(2rem, 8vh, 4rem);
+ padding-bottom: clamp(2rem, 6vh, 4rem);
+ }
+
+ @media (min-width: 1024px){
+ .hero-section{
+ min-height: 75vh;
+ display: flex;
+ align-items: center;
+ }
+ }
+
+ .glass-panel {
+ background: linear-gradient(180deg, rgba(23, 30, 48, 0.7) 0%, rgba(10, 15, 25, 0.8) 100%);
+ backdrop-filter: blur(10px);
+ -webkit-backdrop-filter: blur(10px);
+ border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+ }
+
+ .text-glow { text-shadow: 0 0 40px rgba(255, 255, 255, 0.15); }
+
+ .nav-link { position: relative; }
+ .nav-link::after {
+ content: ''; position: absolute; width: 0; height: 2px;
+ bottom: -4px; left: 0; background-color: #FFCC00; transition: width 0.3s;
+ }
+ .nav-link:hover::after { width: 100%; }
+
+ .hero-shift{ transform: translateX(var(--hero-x)); }
+ .hero-stack{ position: relative; isolation: isolate; }
+ .hero-figure{ position: relative; z-index: 70; pointer-events: none; }
+ .hero-figure img{ transform: translateX(var(--hero-img-x)); }
+
+ .hero-pills{
+ position: absolute;
+ top: var(--pill-top);
+ right: 0;
+ z-index: var(--pill-z);
+ transform: translate(var(--pill-x), var(--pill-y)) scale(var(--pill-scale));
+ transform-origin: top right;
+ pointer-events: none;
+ }
+ .hero-pills button, .hero-pills a { pointer-events: auto; }
+
+ /* =========================
+ AFTER HERO – LIGHTER PREMIUM OPTION
+ ========================= */
+
+ .after-hero{
+ margin-top: calc(var(--after-hero-overlap) * -1);
+ padding-top: var(--after-hero-pt);
+ position: relative;
+ z-index: 30;
+ overflow: hidden;
+ border-top: 1px solid rgba(255,255,255,0.07);
+
+ /* ✅ Ajuste: menos “negro”, más “índigo premium” + más glow */
+ background:
+ linear-gradient(180deg, rgba(10,8,18,0.55) 0%, rgba(10,8,18,0.28) 16%, rgba(10,8,18,0.0) 36%),
+ radial-gradient(1100px 560px at 18% 8%, rgba(255, 204, 0, 0.14), transparent 60%),
+ radial-gradient(980px 560px at 85% 14%, rgba(212, 5, 17, 0.13), transparent 62%),
+ radial-gradient(1400px 820px at 50% 0%, rgba(255,255,255,0.07), transparent 68%),
+ linear-gradient(180deg, rgba(26,18,46,0.0) 0%, #1b1036 14%, #120a26 60%, #0b0718 100%);
+ }
+
+ .after-hero::before{
+ content:"";
+ position:absolute;
+ inset:-2px;
+ pointer-events:none;
+
+ /* ✅ Un poco más visible el grid (pero suave) */
+ opacity: 0.42;
+
+ background-image:
+ linear-gradient(to right, rgba(255,255,255,0.065) 1px, transparent 1px),
+ linear-gradient(to bottom, rgba(255,255,255,0.055) 1px, transparent 1px);
+ background-size: 52px 52px;
+ mask-image: radial-gradient(circle at 50% 10%, rgba(0,0,0,1), rgba(0,0,0,0) 70%);
+ }
+
+ .after-hero::after{
+ content:"";
+ position:absolute;
+ left: 8%;
+ right: 8%;
+ top: 0;
+ height: 2px;
+ background: linear-gradient(90deg, transparent, rgba(255,204,0,0.62), rgba(212,5,17,0.40), transparent);
+ opacity: 0.80;
+ pointer-events:none;
+ }
+
+ .section-kicker{
+ font-size: 12px;
+ letter-spacing: 0.18em;
+ text-transform: uppercase;
+ font-weight: 800;
+ color: rgba(255,255,255,0.78);
+ }
+
+ .section-title{
+ font-weight: 900;
+ letter-spacing: -0.02em;
+ line-height: 1.12;
+ }
+
+ /* ✅ Subtexto un pelín más claro */
+ .section-sub{
+ color: rgba(209,213,219,0.82);
+ }
+
+ .divider-soft{
+ height: 1px;
+ background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+ }
+
+ .no-scrollbar::-webkit-scrollbar{ display:none; }
+ .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none; }
+
+ /* =========================
+ PARTNERS (LOGOS) – SAME
+ ========================= */
+
+ .partners-kicker{
+ text-shadow: 0 0 22px rgba(255, 204, 0, 0.22);
+ }
+
+ .partners-strip{
+ background: transparent;
+ border: 0;
+ box-shadow: none;
+ padding: 0;
+ border-radius: 0;
+ backdrop-filter: none;
+ -webkit-backdrop-filter: none;
+ }
+
+ .partner-logo{
+ color: #8c8996;
+ font-size: clamp(0.85rem, 1.5vw, 1.45rem);
+ letter-spacing: 0.04em;
+ text-shadow: 0 0 26px rgba(0,0,0,0.55);
+ transition: color 220ms ease, transform 220ms ease, text-shadow 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+ user-select: none;
+ cursor: pointer;
+ }
+
+ .partner-logo:hover{
+ color: #FFCC00;
+ text-shadow: 0 0 26px rgba(255,204,0,0.22);
+ transform: translateY(-1px);
+ }
+
+ .partner-logo--frame{
+ padding: 0.35em 0.9em;
+ border: 2px solid rgba(255,255,255,0.30);
+ border-radius: 0.25rem;
+ }
+
+ .partner-logo--frame:hover{
+ border-color: rgba(255,204,0,0.75);
+ box-shadow: 0 0 18px rgba(255,204,0,0.14);
+ }
+
+ 
+
+/* Marquee (auto-scrolling) — like finary.com */
+.marquee{
+  position: relative;
+  overflow: hidden;
+  /* subtle fade on edges */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+
+.marquee__inner{
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 26s linear infinite;
+  will-change: transform;
+}
+
+.marquee__group{
+  display: flex;
+  align-items: center;
+  gap: 3.5rem;
+  padding: 0.25rem 0.75rem;
+  white-space: nowrap;
+}
+
+.partner-sep{
+  color: rgba(255,255,255,0.18);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  transform: translateY(-1px);
+  user-select: none;
+}
+
+.partners-strip:hover .marquee__inner{
+  animation-play-state: paused;
+}
+
+@keyframes marqueeScroll{
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@media (max-width: 640px){
+  .marquee__inner{ animation-duration: 22s; }
+  .marquee__group{ gap: 2.25rem; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .marquee{
+    -webkit-mask-image: none;
+    mask-image: none;
+    overflow-x: auto;
+  }
+  .marquee__inner{
+    animation: none;
+  }
+}
+
+@media (max-width: 640px){
+ .partners-strip{
+ padding: 1.15rem 1.1rem;
+ border-radius: 1.25rem;
+ }
+ .partner-logo{
+ font-size: 1.85rem;
+ }
+ }
+
+ /* Partner chips */
+ .logo-chip{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding: 0.65rem 1.1rem;
+ border-radius: 999px;
+ border: 1px solid rgba(255,255,255,0.10);
+ background: rgba(255,255,255,0.04);
+ transition: transform 240ms ease, background 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
+ white-space: nowrap;
+ user-select: none;
+ }
+ .logo-chip:hover{
+ transform: translateY(-2px);
+ background: rgba(255,255,255,0.06);
+ border-color: rgba(255,204,0,0.35);
+ box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+ }
+
+ /* ✅ Premium cards – a bit brighter */
+ .premium-card {
+ background: rgba(255, 255, 255, 0.055);
+ border: 1px solid rgba(255, 255, 255, 0.10);
+ backdrop-filter: blur(10px);
+ -webkit-backdrop-filter: blur(10px);
+ transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+ position: relative;
+ overflow: hidden;
+ transform: translateZ(0);
+ }
+
+ .premium-card::before{
+ content:"";
+ position:absolute;
+ inset:0;
+ border-radius: 1rem;
+ padding:1px;
+ background: linear-gradient(135deg,
+ rgba(255,204,0,0.62),
+ rgba(212,5,17,0.28),
+ rgba(255,255,255,0.12)
+ );
+ -webkit-mask:
+ linear-gradient(#000 0 0) content-box,
+ linear-gradient(#000 0 0);
+ -webkit-mask-composite: xor;
+ mask-composite: exclude;
+ opacity: 0.0;
+ transition: opacity 260ms ease;
+ pointer-events:none;
+ }
+
+ .premium-card::after{
+ content:"";
+ position:absolute;
+ inset:-40%;
+ background:
+ radial-gradient(circle at 30% 20%, rgba(255,204,0,0.22), transparent 55%),
+ radial-gradient(circle at 70% 40%, rgba(212,5,17,0.16), transparent 55%);
+ opacity: 0.62;
+ transform: translateY(10px);
+ transition: transform 380ms ease, opacity 380ms ease;
+ pointer-events:none;
+ }
+
+ .premium-card:hover {
+ background: rgba(255, 255, 255, 0.075);
+ border-color: rgba(255, 204, 0, 0.28);
+ transform: translateY(-6px);
+ box-shadow: 0 26px 70px rgba(0, 0, 0, 0.45), 0 0 26px rgba(255, 204, 0, 0.08);
+ }
+ .premium-card:hover::before{ opacity: 1; }
+ .premium-card:hover::after{ transform: translateY(0); opacity: 0.95; }
+
+ .step-number-bg {
+ position: absolute;
+ top: -14px;
+ right: 16px;
+ font-size: 8.5rem;
+ font-weight: 900;
+ line-height: 1;
+ color: rgba(255, 255, 255, 0.04);
+ transition: all 0.4s ease;
+ z-index: 0;
+ pointer-events: none;
+ }
+
+ .premium-card:hover .step-number-bg {
+ color: rgba(255, 204, 0, 0.10);
+ transform: scale(1.07);
+ }
+
+ .glow-icon-box {
+ width: 64px;
+ height: 64px;
+ border-radius: 18px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ margin-bottom: 1.5rem;
+ position: relative;
+ z-index: 10;
+
+ /* ✅ más luz en el icon */
+ background: linear-gradient(180deg, rgba(255,204,0,0.22), rgba(255,204,0,0.10));
+ border: 1px solid rgba(255, 204, 0, 0.28);
+ box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+ transition: all 0.35s ease;
+ }
+ .glow-icon-box::after{
+ content:"";
+ position:absolute;
+ inset:-14px;
+ background: radial-gradient(circle, rgba(255,204,0,0.22), transparent 60%);
+ opacity: 0.70;
+ filter: blur(10px);
+ z-index:-1;
+ transition: opacity 0.35s ease;
+ }
+ .premium-card:hover .glow-icon-box {
+ transform: translateY(-1px) rotate(-1deg);
+ border-color: rgba(255, 204, 0, 0.60);
+ box-shadow: 0 0 18px rgba(255, 204, 0, 0.22), inset 0 0 0 1px rgba(255,255,255,0.10);
+ }
+ .premium-card:hover .glow-icon-box::after{ opacity: 0.95; }
+
+ /* Feature cards (Soluciones) */
+ .feature-card{
+ position:relative;
+ overflow:hidden;
+ border-radius: 1.75rem;
+
+ /* 🔥 Más presencia sin cambiar layout */
+ background: rgba(255,255,255,0.05);
+ border: 1px solid rgba(255,255,255,0.12);
+ backdrop-filter: blur(10px);
+ -webkit-backdrop-filter: blur(10px);
+
+ box-shadow:
+ 0 18px 60px rgba(0,0,0,0.40),
+ inset 0 1px 0 rgba(255,255,255,0.06);
+
+ transition:
+ transform 320ms cubic-bezier(0.4, 0, 0.2, 1),
+ border-color 320ms ease,
+ background 320ms ease,
+ box-shadow 320ms ease;
+ transform: translateZ(0);
+ }
+
+ /* Borde premium suave (siempre visible) */
+ .feature-card::after{
+ content:"";
+ position:absolute;
+ inset:0;
+ border-radius: 1.75rem;
+ padding:1px;
+ background: linear-gradient(135deg,
+ rgba(255,204,0,0.35),
+ rgba(212,5,17,0.18),
+ rgba(255,255,255,0.10)
+ );
+ -webkit-mask:
+ linear-gradient(#000 0 0) content-box,
+ linear-gradient(#000 0 0);
+ -webkit-mask-composite: xor;
+ mask-composite: exclude;
+ opacity: 0.55;
+ pointer-events:none;
+ }
+
+ /* Glows internos */
+ .feature-card::before{
+ content:"";
+ position:absolute;
+ inset:-45%;
+ background:
+ radial-gradient(circle at 18% 18%, rgba(255,204,0,0.22), transparent 55%),
+ radial-gradient(circle at 86% 26%, rgba(212,5,17,0.14), transparent 60%),
+ radial-gradient(circle at 50% 0%, rgba(255,255,255,0.08), transparent 62%);
+ opacity: 0.75;
+ pointer-events:none;
+ transform: translateY(10px);
+ transition: transform 420ms ease, opacity 420ms ease;
+ }
+
+ .feature-card:hover{
+ transform: translateY(-7px);
+ border-color: rgba(255,204,0,0.30);
+ background: rgba(255,255,255,0.07);
+ box-shadow:
+ 0 30px 90px rgba(0,0,0,0.50),
+ 0 0 30px rgba(255,204,0,0.10),
+ inset 0 1px 0 rgba(255,255,255,0.08);
+ }
+
+ .feature-card:hover::before{
+ transform: translateY(0);
+ opacity: 0.98;
+ }
+
+ .feature-card:hover::after{
+ opacity: 0.95;
+ background: linear-gradient(135deg,
+ rgba(255,204,0,0.60),
+ rgba(212,5,17,0.26),
+ rgba(255,255,255,0.14)
+ );
+ }
+
+ .feature-badge{
+ display:inline-flex;
+ align-items:center;
+ gap:0.5rem;
+ padding: 0.45rem 0.85rem;
+ border-radius: 999px;
+ border: 1px solid rgba(255,255,255,0.14);
+ background: rgba(255,255,255,0.08);
+ color: rgba(255,255,255,0.92);
+ font-weight: 900;
+ font-size: 12px;
+ letter-spacing: 0.10em;
+ text-transform: uppercase;
+ box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+ }
+
+ /* Stats dentro de la card un pelín más “pill” */
+ .feature-card .stat-pill{
+ border-radius: 1rem;
+ border: 1px solid rgba(255,255,255,0.12);
+ background: rgba(255,255,255,0.055);
+ padding: 0.85rem 1rem;
+ box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+ transition: transform 240ms ease, border-color 240ms ease, background 240ms ease;
+ }
+ .feature-card:hover .stat-pill{
+ border-color: rgba(255,204,0,0.18);
+ background: rgba(255,255,255,0.07);
+ }
+
+ /* DHL block – same */
+ .dhl-shell{
+ position:relative;
+ overflow:hidden;
+ border-radius: 2rem;
+ background:
+ radial-gradient(900px 520px at 20% 20%, rgba(255,204,0,0.12), transparent 60%),
+ radial-gradient(900px 520px at 90% 10%, rgba(212,5,17,0.12), transparent 62%),
+ linear-gradient(180deg, rgba(12,7,21,1) 0%, rgba(7,5,13,1) 100%);
+ border: 1px solid rgba(255,255,255,0.10);
+ box-shadow: 0 30px 90px rgba(0,0,0,0.55);
+ }
+ .dhl-shell::before{
+ content:"";
+ position:absolute;
+ inset:0;
+ pointer-events:none;
+ opacity: 0.55;
+ background:
+ linear-gradient(90deg, transparent, rgba(255,204,0,0.18), rgba(212,5,17,0.10), transparent);
+ mask-image: radial-gradient(circle at 30% 0%, rgba(0,0,0,1), rgba(0,0,0,0) 70%);
+ }
+ .dhl-stats{
+ display:grid;
+ grid-template-columns: repeat(3, minmax(0,1fr));
+ gap: 0.75rem;
+ }
+ @media (max-width: 640px){
+ .dhl-stats{ grid-template-columns: 1fr; }
+ }
+ .stat-pill{
+ border-radius: 1rem;
+ border: 1px solid rgba(255,255,255,0.10);
+ background: rgba(255,255,255,0.04);
+ padding: 0.85rem 1rem;
+ }
+
+ /* Simple reveal */
+ .reveal{ opacity:0; transform: translateY(14px); transition: opacity 600ms ease, transform 600ms ease; }
+ .reveal.is-visible{ opacity:1; transform: translateY(0); }
+ 
+ /* =========================================================
+ POWER-UP (solo visual): hacemos que "la petemos" 😄
+ - Mantiene estructura y layout
+ - Sube contraste, glow y sensación premium en las 3 cards
+ ========================================================= */
+ .premium-card{
+ background: rgba(255,255,255,0.075) !important;
+ border: 1px solid rgba(255,255,255,0.14) !important;
+ box-shadow: 0 22px 70px rgba(0,0,0,0.45);
+ }
+ .premium-card::before{
+ opacity: 0.22 !important; /* borde degradado sutil siempre visible */
+ }
+ .premium-card::after{
+ opacity: 0.78 !important;
+ filter: blur(0px);
+ }
+ .premium-card:hover{
+ background: rgba(255,255,255,0.10) !important;
+ border-color: rgba(255,204,0,0.38) !important;
+ box-shadow: 0 30px 95px rgba(0,0,0,0.55), 0 0 34px rgba(255,204,0,0.10);
+ transform: translateY(-8px) !important;
+ }
+ .premium-card:hover::before{ opacity: 1 !important; }
+ .premium-card:hover::after{ opacity: 1 !important; transform: translateY(0) scale(1.02) !important; }
+
+ .step-number-bg{
+ color: rgba(255,255,255,0.055) !important;
+ letter-spacing: -0.04em;
+ }
+ .premium-card:hover .step-number-bg{
+ color: rgba(255,204,0,0.15) !important;
+ transform: scale(1.09) translateY(-2px) !important;
+ }
+
+ .glow-icon-box{
+ background: linear-gradient(180deg, rgba(255,204,0,0.28), rgba(255,204,0,0.12)) !important;
+ border-color: rgba(255,204,0,0.34) !important;
+ box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10), 0 14px 34px rgba(0,0,0,0.35);
+ }
+ .glow-icon-box i{
+ filter: drop-shadow(0 10px 18px rgba(255,204,0,0.14));
+ }
+ .premium-card:hover .glow-icon-box{
+ transform: translateY(-2px) rotate(-1deg) scale(1.02) !important;
+ border-color: rgba(255,204,0,0.70) !important;
+ box-shadow: 0 0 26px rgba(255,204,0,0.22), inset 0 0 0 1px rgba(255,255,255,0.12);
+ }
+ .premium-card p{
+ color: rgba(229,231,235,0.86) !important;
+ }
+ .premium-card h3{
+ text-shadow: 0 18px 48px rgba(0,0,0,0.55);
+ }
+
+ 
+ /* Mobile: keep hero title in 2 lines (no 3-line wrap) */
+ @media (max-width: 640px){
+ .hero-title{ line-height: 1.06; }
+ .hero-title span:first-child{
+ white-space: nowrap;
+ font-size: 1.85rem; /* smaller to fit in one line */
+ }
+ .hero-title span:last-child{
+ font-size: 2.05rem;
+ }
+
+ /* Smaller hero pills under the hero image */
+ .hero-pills{ gap: 0.75rem; right: 12px; }
+
+ /* Ensure pills never overflow viewport */
+ .hero-pills .glass-panel{ max-width: calc(100vw - 28px) !important; }
+ .hero-pills .whitespace-nowrap{ white-space: normal !important; }
+ .hero-pills .glass-panel{
+ padding: 0.55rem 0.85rem;
+ padding-right: 1.05rem;
+ border-radius: 0.95rem;
+ }
+ .hero-pills .glass-panel .w-8.h-8{
+ width: 2.0rem !important;
+ height: 2.0rem !important;
+ }
+ .hero-pills .glass-panel i{ font-size: 0.9rem; }
+ .hero-pills .glass-panel .text-xs,
+ .hero-pills .glass-panel .text-sm{
+ font-size: 0.82rem !important;
+ line-height: 1.1 !important;
+ }
+ .hero-pills .glass-panel .text-[10px]{
+ font-size: 0.70rem !important;
+ line-height: 1.1 !important;
+ }
+ }
+
+ 
+ /* Language selector */
+ .lang-btn[data-active="true"]{ background: rgba(255,255,255,0.16); color: #fff; }
+
+
+@media (prefers-reduced-motion: reduce) {
+ }
+
+
+/* Logo dot: strong glow that grows (dot stays same size) */
+#lostitLogoDot{
+ position: relative;
+ box-shadow: 0 0 0 2px rgba(255,204,0,.22), 0 0 18px rgba(255,204,0,.55) !important;
+}
+#lostitLogoDot::after{
+ content: "";
+ position: absolute;
+ inset: -6px; /* glow extends beyond the dot */
+ border-radius: 9999px;
+ background: rgba(255,204,0,.55);
+ filter: blur(10px);
+ opacity: .40;
+ transform: scale(.70);
+ pointer-events: none;
+}
+/* the "pulse" happens on the glow only */
+.logo-dot-pulse::after{
+ animation: lostitGlowGrow 4.2s ease-out infinite;
+ transform-origin: center;
+ will-change: transform, opacity;
+}
+@keyframes lostitGlowGrow{
+ 0% { transform: scale(.70); opacity: .15; }
+ 30% { transform: scale(1.45); opacity: .75; }
+ 80% { transform: scale(1.45); opacity: .05; }
+ 100% { transform: scale(.70); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce){
+ .logo-dot-pulse::after{ animation: none !important; opacity: .35; transform: scale(1.2); }
+}
+
+
+ /* =========================
+ REVIEWS + FAQ
+ ========================= */
+ .review-card{
+   background: rgba(255,255,255,0.96);
+   border: 1px solid rgba(255,255,255,0.12);
+   box-shadow: 0 26px 70px rgba(0,0,0,0.45);
+ }
+ .faq details summary::-webkit-details-marker{ display:none; }
+ .faq details[open] .faq-chevron{ transform: rotate(90deg); }
+ .faq-chevron{ transition: transform 200ms ease; }
+
+
+/* Mobile: show max 20 hotel logos (reduce visual noise + improve scroll) */
+@media (max-width: 639px){
+  [data-logo-grid] > .logo-tile:nth-child(n+21){
+    display: none !important;
+  }
+}
+
+</style>
+</head>
+<body class="antialiased font-sans selection:bg-dhl selection:text-black overflow-x-hidden">
+<div aria-hidden="true" class="page-bg"></div>
+<nav class="sticky top-0 w-full px-6 sm:px-8 lg:px-10 py-3 sm:py-4 flex justify-between items-center z-[100] glass-panel">
+<div class="max-w-[1400px] w-full mx-auto flex justify-between items-center">
+<div class="flex items-center gap-6 md:gap-8">
+<div class="flex items-center gap-3 font-bold text-2xl tracking-tight text-white">
+
+
+<div id="lostitLogoDot" class="w-4 h-4 rounded-full bg-dhl shadow-[0_0_15px_#FFCC00] logo-dot-pulse"></div>
+ Lostit
+ </div>
+<div class="hidden md:flex gap-8 text-sm text-gray-300 font-medium">
+<a class="nav-link hover:text-white transition-colors" data-i18n="nav_how" href="#como-funciona">Cómo funciona</a>
+<a class="nav-link hover:text-white transition-colors" data-i18n="nav_solutions" href="#targets">Soluciones</a>
+<a class="nav-link hover:text-white transition-colors" data-i18n="nav_partner" href="#dhl">Partnership</a>
+</div>
+</div>
+<div class="flex items-center gap-3 sm:gap-4">
+<div class="hidden md:flex items-center relative z-40" data-lang-dropdown="desktop">
+ <button type="button"
+ class="lang-dd-trigger h-[36px] min-w-[68px] rounded-xl bg-white/5 border border-white/12 text-white/90 text-xs font-semibold px-2 pr-8 hover:bg-white/10 transition relative cursor-pointer"
+ aria-haspopup="listbox" aria-expanded="false">
+ <span class="lang-dd-label">ES</span>
+ <svg class="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 opacity-80" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+ <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z" clip-rule="evenodd"/>
+ </svg>
+ </button>
+
+ <div class="lang-dd-menu hidden absolute top-full left-0 mt-2 w-[72px] rounded-xl border border-white/12 bg-[#0b0f22]/95 backdrop-blur-xl shadow-2xl overflow-hidden"
+ role="listbox">
+ <button type="button" class="lang-dd-item w-full px-2.5 py-1.5 text-left text-xs text-white/90 hover:bg-white/10 transition" data-lang="es">ES</button>
+ <button type="button" class="lang-dd-item w-full px-2.5 py-1.5 text-left text-xs text-white/90 hover:bg-white/10 transition" data-lang="en">EN</button>
+ <button type="button" class="lang-dd-item w-full px-2.5 py-1.5 text-left text-xs text-white/90 hover:bg-white/10 transition" data-lang="ca">CAT</button>
+ <button type="button" class="lang-dd-item w-full px-2.5 py-1.5 text-left text-xs text-white/90 hover:bg-white/10 transition" data-lang="fr">FR</button>
+ <button type="button" class="lang-dd-item w-full px-2.5 py-1.5 text-left text-xs text-white/90 hover:bg-white/10 transition" data-lang="pt">PT</button>
+ </div>
+</div>
+
+<button class="hidden md:block bg-dhl text-black font-bold px-7 py-2.5 rounded-xl text-sm hover:bg-[#ffdb4d] transition-all whitespace-nowrap" data-i18n="nav_register">
+ Registrar mi hotel
+ </button>
+<button class="hidden md:flex bg-white/5 text-white px-6 py-2.5 rounded-xl text-sm hover:bg-white/10 transition items-center gap-2.5 border border-white/10 whitespace-nowrap" data-i18n="nav_account">
+<i class="fa-solid fa-lock text-xs text-gray-400"></i> Mi cuenta
+ </button>
+<button class="md:hidden text-white text-xl p-2" onclick="toggleMobileMenu()">
+<i class="fa-solid fa-bars" id="menu-icon"></i>
+</button>
+</div>
+</div>
+</nav>
+<div class="fixed inset-0 bg-[#0f0a18] z-[110] hidden flex-col pt-24 px-6 gap-6 animate-fade-in" id="mobile-menu">
+<button class="absolute top-6 right-6 text-white text-2xl" onclick="toggleMobileMenu()">
+<i class="fa-solid fa-xmark"></i>
+</button>
+<div class="md:hidden relative z-40" data-lang-dropdown="mobile">
+ <button type="button"
+ class="lang-dd-trigger w-full h-[44px] rounded-xl bg-white/5 border border-white/12 text-white/90 text-xs font-semibold px-2 pr-8 hover:bg-white/10 transition relative text-left cursor-pointer"
+ aria-haspopup="listbox" aria-expanded="false">
+ <span class="lang-dd-label">ES</span>
+ <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-80" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+ <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z" clip-rule="evenodd"/>
+ </svg>
+ </button>
+
+ <div class="lang-dd-menu hidden absolute top-full left-0 mt-2 w-full rounded-xl border border-white/12 bg-[#0b0f22]/95 backdrop-blur-xl shadow-2xl overflow-hidden"
+ role="listbox">
+ <button type="button" class="lang-dd-item w-full px-2.5 py-1.5 text-left text-xs text-white/90 hover:bg-white/10 transition" data-lang="es">ES</button>
+ <button type="button" class="lang-dd-item w-full px-2.5 py-1.5 text-left text-xs text-white/90 hover:bg-white/10 transition" data-lang="en">EN</button>
+ <button type="button" class="lang-dd-item w-full px-2.5 py-1.5 text-left text-xs text-white/90 hover:bg-white/10 transition" data-lang="ca">CAT</button>
+ <button type="button" class="lang-dd-item w-full px-2.5 py-1.5 text-left text-xs text-white/90 hover:bg-white/10 transition" data-lang="fr">FR</button>
+ <button type="button" class="lang-dd-item w-full px-2.5 py-1.5 text-left text-xs text-white/90 hover:bg-white/10 transition" data-lang="pt">PT</button>
+ </div>
+</div>
+
+<a class="text-xl font-medium text-white border-b border-white/10 pb-4" data-i18n="nav_how" href="#como-funciona" onclick="toggleMobileMenu()">Cómo funciona</a>
+<a class="text-xl font-medium text-white border-b border-white/10 pb-4" data-i18n="nav_solutions" href="#targets" onclick="toggleMobileMenu()">Soluciones</a>
+<a class="text-xl font-medium text-white border-b border-white/10 pb-4" data-i18n="nav_partner" href="#dhl" onclick="toggleMobileMenu()">Partnership</a>
+<div class="flex flex-col gap-4 mt-4">
+<button class="bg-dhl text-black font-bold px-7 py-3 rounded-xl text-lg w-full" data-i18n="nav_register">Registro mi hotel</button>
+<button class="bg-white/10 text-white px-6 py-3 rounded-xl text-lg w-full border border-white/10" data-i18n="nav_account">Mi cuenta</button>
+</div>
+</div>
+<main>
+<!-- HERO (UNCHANGED) -->
+<section class="hero-section mx-auto max-w-[1400px] px-6 sm:px-8 lg:px-10 relative z-20">
+<div class="grid lg:grid-cols-2 gap-8 lg:gap-14 items-center w-full">
+<div class="space-y-7 lg:space-y-8 order-2 lg:order-1">
+<div class="rounded-2xl bg-black/35 border border-white/0 p-6 sm:p-7 lg:p-8 shadow-[0_18px_10px_rgba(0,0,0,0.38)]">
+<!-- Kicker -->
+<div class="inline-flex items-center gap-2 rounded-full bg-white/25 border border-white/10 px-3 py-1.5 text-[11px] sm:text-xs font-semibold text-white/80" data-i18n="hero_kicker_full">
+<span class="text-dhl font-extrabold"><span class="text-white">Lostit</span>: la solución para devolver objetos olvidados.</span>
+ </div>
+<!-- Title -->
+<h1 class="hero-title font-extrabold leading-[1.03] lg:leading-[1.02] text-glow tracking-tight mt-5">
+<span class="block text-[clamp(1.85rem,7vw,3.5rem)] sm:text-[clamp(2rem,4vw,3.5rem)] lg:text-[clamp(1.9rem,2.4vw,2.65rem)] text-white lg:whitespace-nowrap" data-i18n="hero_title_line1">El Superhéroe de los</span>
+<span class="block whitespace-nowrap text-[clamp(1.85rem,7vw,3.5rem)] sm:text-[clamp(2rem,4vw,3.5rem)] lg:text-[clamp(1.9rem,2.4vw,2.65rem)] text-transparent bg-clip-text bg-gradient-to-r from-[#FFF066] via-[#FFCC00] to-[#FFAB00]" data-i18n="hero_title_line2">
+ Objetos Olvidados
+</span>
+</h1>
+<!-- Copy -->
+<div class="mt-5 max-w-xl text-white/90 text-[15px] sm:text-base lg:text-lg leading-relaxed font-light">
+<div class="space-y-4 border-l border-white/10 pl-4">
+<p class="relative"><span class="absolute -left-4 top-[0.65em] w-[6px] h-[5px] rounded-full bg-dhl opacity-80 shadow-[0_0_10px_rgba(255,204,0,0.35)]"></span>
+<span data-i18n="hero_bullet1"><span class="text-dhl font-semibold">Hoteles:</span>
+<span class="text-gray-100 font-semibold">sin contrato, sin costes y sin instalación Software.</span>
+</span></p>
+<p class="relative text-white/85"><span class="absolute -left-4 top-[0.65em] w-[6px] h-[5px] rounded-full bg-dhl opacity-80 shadow-[0_0_10px_rgba(255,204,0,0.35)]"></span>
+ <span data-i18n="hero_bullet2">Registra online el objeto en <span class="text-gray-100 font-semibold">30s</span>.
+ Sin llamadas, sin emails y sin medir ni pesar los envíos.
+ </span></p>
+<p class="relative text-white/85"><span class="absolute -left-4 top-[0.65em] w-[6px] h-[5px] rounded-full bg-dhl opacity-80 shadow-[0_0_10px_rgba(255,204,0,0.35)]"></span>
+ <span data-i18n="hero_bullet3">Todo queda registrado en tu panel:
+ <span class="text-gray-100 font-semibold">estado de devolución</span> +
+ <span class="text-gray-100 font-semibold">nº de seguimiento</span>.
+ </span></p>
+<p class="relative text-white/85"><span class="absolute -left-4 top-[0.65em] w-[6px] h-[5px] rounded-full bg-dhl opacity-80 shadow-[0_0_10px_rgba(255,204,0,0.35)]"></span>
+ <span data-i18n="hero_bullet4">Envíos gestionados con <span class="text-dhl font-semibold">DHL</span>
+<span class="text-white/70">(nº 1 del mundo en logística).</span>
+</span></p>
+<p class="relative text-white/85"><span class="absolute -left-4 top-[0.65em] w-[6px] h-[5px] rounded-full bg-dhl opacity-80 shadow-[0_0_10px_rgba(255,204,0,0.35)]"></span>
+<span data-i18n="hero_bullet5"><span class="text-gray-100 font-semibold">Cajas y sobres gratis</span> para los envíos.
+ </span></p>
+</div>
+</div>
+<!-- CTA -->
+<div class="pt-5 flex justify-center sm:justify-start">
+<button class="group relative overflow-hidden bg-gradient-to-b from-[#FFF066] to-[#FFAB00] text-black font-extrabold px-7 sm:px-9 py-3.5 rounded-2xl text-base lg:text-lg shadow-[0_18px_60px_rgba(255,204,0,0.24)] hover:shadow-[0_22px_78px_rgba(255,204,0,0.32)] hover:scale-[1.03] active:scale-[0.99] transition-transform whitespace-nowrap" data-i18n="cta_register">
+<span class="flex items-center justify-center gap-2">
+<i class="fa-solid fa-hotel"></i>
+ Registrar mi hotel
+ <i class="fa-solid fa-arrow-right-long opacity-70 group-hover:translate-x-1 transition-transform"></i>
+</span>
+<span class="block text-[11px] font-semibold text-black/70 mt-1 tracking-wide">
+ Gratis · En 30s · Cajas incluidas
+ </span>
+</button>
+</div>
+<!-- Proof points -->
+<div class="mt-5 sm:mt-6 flex flex-wrap items-center justify-center sm:justify-start gap-x-6 sm:gap-x-6 gap-y-2 text-[11px] sm:text-sm text-white font-medium pb-1">
+<span class="flex items-center gap-2 whitespace-nowrap" data-i18n="mini_1"><i class="fa-solid fa-bolt text-green-500"></i> 30s para registro</span>
+<span class="flex items-center gap-2 whitespace-nowrap" data-i18n="mini_2"><i class="fa-solid fa-circle-check text-green-500"></i> 0€ coste hotel</span>
+<span class="flex items-center gap-2 whitespace-nowrap" data-i18n="mini_3"><i class="fa-solid fa-box-open text-dhl"></i> Cajas de envío gratis</span>
+</div>
+</div>
+</div>
+<div class="relative order-1 lg:order-2 w-full">
+<div class="relative w-full flex justify-center">
+<div class="hero-shift hero-stack relative w-full max-w-[560px] lg:max-w-[760px]">
+<div class="hero-figure animate-float">
+<img alt="Superhero" class="w-full object-contain drop-shadow-2xl" src="heroe.png" style="max-height: clamp(320px, 56svh, 680px);"/>
+</div>
+<div class="hero-pills flex flex-col gap-3 sm:gap-5">
+<div class="glass-panel px-4 py-2.5 rounded-xl flex items-center gap-3 pr-6 shadow-xl backdrop-blur-xl border border-white/10">
+<div class="bg-dhl text-black p-1.5 rounded-full w-8 h-8 flex items-center justify-center font-bold text-xs shadow-lg">
+<i class="fa-solid fa-cube"></i>
+</div>
+<div>
+<div class="text-xs sm:text-sm font-bold text-dhl leading-tight whitespace-nowrap" data-i18n="pill1_title">Envío con DHL unicamente</div>
+<div class="text-[10px] text-gray-400 font-medium leading-tight whitespace-nowrap" data-i18n="pill1_sub">recogida en recepción</div>
+</div>
+</div>
+<div class="glass-panel px-4 py-2.5 rounded-xl flex items-center gap-3 pr-6 shadow-xl backdrop-blur-xl border border-white/10">
+<div class="bg-dhl text-black p-1.5 rounded-full w-8 h-8 flex items-center justify-center font-bold text-xs shadow-lg">
+<i class="fa-solid fa-truck-fast"></i>
+</div>
+<div>
+<div class="text-xs sm:text-sm font-bold text-dhl leading-tight whitespace-nowrap" data-i18n="pill2_title">Entrega 24-48h *</div>
+<div class="text-[10px] text-gray-400 font-medium leading-tight whitespace-nowrap" data-i18n="pill2_sub">Etiqueta automatica / Nº Tracking</div>
+</div>
+</div>
+<div class="glass-panel px-4 py-2.5 rounded-xl flex items-center gap-3 pr-6 shadow-xl backdrop-blur-xl border border-white/10">
+<div class="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 border border-white/15 shadow-lg">
+<i class="fa-solid fa-phone text-dhl"></i>
+</div>
+<div>
+<div class="text-xs sm:text-sm font-bold text-white/90 leading-tight whitespace-nowrap" data-i18n="pill3_title">Chat de suporte 24h</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- AFTER HERO -->
+<div class="after-hero text-white rounded-t-[2.5rem] sm:rounded-t-[3rem] lg:rounded-t-[4rem] pb-16">
+<!-- Partners -->
+<section class="mx-auto max-w-[1400px] px-6 sm:px-8 lg:px-10 mb-14">
+<div class="pt-12 pb-8 text-center reveal">
+<span class="inline-block bg-dhl text-black font-mont font-extrabold uppercase tracking-[0.40em] px-3 sm:px-4 py-[1px] sm:py-[2px] text-[10px] sm:text-xs md:text-sm leading-none shadow-[0_8px_24px_rgba(255,204,0,0.12)]" data-i18n="partners_kicker">
+ Confianza de líderes del sector
+ </span>
+</div>
+<div class="reveal">
+<div class="partners-strip">
+<div class="marquee" aria-label="Grupos hoteleros">
+  <div class="marquee__inner">
+    <div class="marquee__group">
+            <div class="partner-logo font-serif font-bold tracking-[0.06em]">TOC</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo font-mont font-bold tracking-[0.04em]">SERHS</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo font-serif italic tracking-[0.04em]">SILKEN</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo font-mont font-bold tracking-[0.04em]">ROOM MATE</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo partner-logo--frame font-mont font-bold tracking-[0.10em]">4R</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo font-sans font-extrabold tracking-[0.10em]">H10</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo font-serif font-bold tracking-[0.06em]">LEONARDO</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo partner-logo--frame font-mont font-bold tracking-[0.04em]">MARRIOTT</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo font-sans font-extrabold tracking-[0.04em]">MELIÁ</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo font-serif font-bold tracking-[0.06em]">ABBA</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+    </div>
+    <div class="marquee__group" aria-hidden="true">
+            <div class="partner-logo font-serif font-bold tracking-[0.06em]">TOC</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo font-mont font-bold tracking-[0.04em]">SERHS</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo font-serif italic tracking-[0.04em]">SILKEN</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo font-mont font-bold tracking-[0.04em]">ROOM MATE</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo partner-logo--frame font-mont font-bold tracking-[0.10em]">4R</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo font-sans font-extrabold tracking-[0.10em]">H10</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo font-serif font-bold tracking-[0.06em]">LEONARDO</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo partner-logo--frame font-mont font-bold tracking-[0.04em]">MARRIOTT</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo font-sans font-extrabold tracking-[0.04em]">MELIÁ</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+      <div class="partner-logo font-serif font-bold tracking-[0.06em]">ABBA</div>
+      <span class="partner-sep" aria-hidden="true">•</span>
+  </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Cómo funciona -->
+<section class="mx-auto max-w-[1400px] px-6 sm:px-8 lg:px-10 mb-16" id="como-funciona">
+<div class="text-center mb-12 reveal">
+<h2 class="section-title text-3xl md:text-5xl mt-3 tracking-tight">
+<span class="text-white" data-i18n="mission_title_1">Misión:</span>
+<span class="text-dhl" data-i18n="mission_title_2">Recuperación Express</span>
+</h2>
+<p class="section-sub mt-4 max-w-2xl mx-auto" data-i18n="mission_sub">
+ Tres pasos para convertir una pérdida en una experiencia premium.
+</p>
+</div>
+<div class="grid md:grid-cols-3 gap-6 lg:gap-8 reveal">
+<div class="premium-card p-8 rounded-2xl group h-full">
+<span class="step-number-bg">1</span>
+<div class="relative z-10 flex flex-col h-full">
+<div class="glow-icon-box">
+<i class="fa-solid fa-briefcase text-3xl text-dhl"></i>
+</div>
+<h3 class="text-xl font-extrabold text-white mb-3" data-i18n="step1_title">El Hotel Registra</h3>
+<p class="text-gray-300/85 leading-relaxed" data-i18n="step1_desc">
+ El personal registra el objeto en ~30 segundos con la opcion de subir una foto del objeto.
+ </p>
+<div class="mt-auto pt-6 flex items-center gap-2 text-sm text-white/78">
+<i class="fa-solid fa-circle-check text-green-500"></i>
+<span data-i18n="step1_badge">Sin formularios eternos</span>
+</div>
+</div>
+</div>
+<div class="premium-card p-8 rounded-2xl group h-full">
+<span class="step-number-bg">2</span>
+<div class="relative z-10 flex flex-col h-full">
+<div class="glow-icon-box">
+<i class="fa-solid fa-wand-magic-sparkles text-3xl text-dhl"></i>
+</div>
+<h3 class="text-xl font-extrabold text-white mb-3" data-i18n="step2_title">Magia Automática</h3>
+<p class="text-gray-300/85 leading-relaxed" data-i18n="step2_desc">
+ El huésped recibe un email con un enlace, introduce la dirección, ve la tarifa al instante y paga online (Opción de pago por el hotel).
+ </p>
+<div class="mt-auto pt-6 flex items-center gap-2 text-sm text-white/78">
+<i class="fa-solid fa-bolt text-dhl"></i>
+<span data-i18n="step2_badge">Notificaciones + tracking</span>
+</div>
+</div>
+</div>
+<div class="premium-card p-8 rounded-2xl group h-full">
+<span class="step-number-bg">3</span>
+<div class="relative z-10 flex flex-col h-full">
+<div class="glow-icon-box">
+<i class="fa-solid fa-rocket text-3xl text-dhl" style="transform: rotate(45deg);"></i>
+</div>
+<h3 class="text-xl font-extrabold text-white mb-3" data-i18n="step3_title">Misión Cumplida</h3>
+<p class="text-gray-300/85 leading-relaxed" data-i18n="step3_desc">
+ El hotel recibe la etiqueta automáticamente. DHL recoge el paquete en recepción. El objeto vuelve a casa con envío seguro.
+ </p>
+<div class="mt-auto pt-6 flex items-center gap-2 text-sm text-white/78">
+<i class="fa-solid fa-shield-halved text-dhl"></i>
+<span data-i18n="step3_badge">Seguridad y control</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Soluciones + DHL + footer (RESTO IGUAL) -->
+<!-- 👇 Lo dejo igual que tu versión para no tocar más de la cuenta -->
+<section class="mx-auto max-w-[1400px] px-6 sm:px-8 lg:px-10 mb-16" id="targets">
+<div class="text-center mb-10 reveal">
+<p class="section-kicker" data-i18n="solutions_kicker">Soluciones</p>
+<h2 class="section-title text-3xl md:text-5xl mt-3" data-i18n="solutions_title">
+ Diseñado para hoteles. Amado por huéspedes.
+ </h2>
+</div>
+<div class="grid lg:grid-cols-2 gap-6 lg:gap-8 reveal">
+<!-- Hotel card -->
+<div class="feature-card p-8 sm:p-10">
+<div class="relative z-10">
+<span class="feature-badge" data-i18n="hotel_badge">
+<i class="fa-solid fa-hotel text-dhl"></i> Hotel / Partner
+ </span>
+<h3 class="mt-5 text-2xl sm:text-3xl font-extrabold tracking-tight" data-i18n="hotel_title">
+ Lostit la herramienta super intuitiva, rápida y optimizada para reducir por completo el trabajo del recepcionista.
+ </h3>
+
+<div class="mt-7 grid grid-cols-1 sm:grid-cols-3 gap-3">
+<div class="stat-pill">
+<div class="text-sm text-dhl font-semibold" data-i18n="hotel_stat1_label">Registro</div>
+<div class="text-lg font-extrabold text-white mt-1" data-i18n="hotel_stat1_value">~30 segundos</div>
+</div>
+<div class="stat-pill">
+<div class="text-sm text-dhl font-semibold" data-i18n="hotel_stat2_label">Coste para el hotel</div>
+<div class="text-lg font-extrabold text-white mt-1" data-i18n="hotel_stat2_value">0€</div>
+</div>
+
+<div class="stat-pill">
+ <div class="text-sm text-dhl font-semibold" data-i18n="hotel_stat3_label">Chat de soporte</div>
+ <div class="text-base sm:text-lg font-extrabold text-white mt-1" data-i18n="hotel_stat3_value">24H</div>
+</div>
+</div>
+<ul class="mt-7 space-y-3 text-white/85">
+<li class="flex items-start gap-3">
+<i class="fa-solid fa-circle-check text-green-500 mt-1"></i>
+<span data-i18n="hotel_b1"><b>Devolución rapida</b>: Sin llamar al cliente, sin enviarle un email y sin medir ni pesar los envíos.</span>
+</li>
+<li class="flex items-start gap-3">
+<i class="fa-solid fa-circle-check text-green-500 mt-1"></i>
+<span data-i18n="hotel_b2"><b>Control</b>: tracking, notificaciones y todo centralizado.</span>
+</li>
+<li class="flex items-start gap-3">
+<i class="fa-solid fa-circle-check text-green-500 mt-1"></i>
+<span data-i18n="hotel_b3"><b>Tu imagen</b>: conviertes un “problema” en un servicio premium.</span>
+</li>
+</ul>
+<div class="mt-8 flex flex-col sm:flex-row gap-3">
+<button class="bg-dhl text-black font-extrabold px-6 py-3 rounded-xl hover:bg-[#ffdb4d] transition" data-i18n="hotel_btn_register">
+<i class="fa-solid fa-user-plus mr-2"></i> Registrar mi hotel
+ </button>
+<button class="bg-white/7 text-white font-semibold px-6 py-3 rounded-xl border border-white/12 hover:bg-white/10 transition" data-i18n="hotel_btn_demo">
+<i class="fa-solid fa-circle-play mr-2 text-dhl"></i> Ver demo
+ </button>
+</div>
+</div>
+</div>
+<!-- Guest card -->
+<div class="feature-card p-8 sm:p-10">
+<div class="relative z-10">
+<span class="feature-badge" data-i18n="guest_badge">
+<i class="fa-solid fa-briefcase text-dhl"></i> Huésped
+ </span>
+<h3 class="mt-5 text-2xl sm:text-3xl font-extrabold tracking-tight" data-i18n="guest_title">
+ Recuperación rápida.
+ <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400"> Sin líos.</span>
+</h3>
+<p class="mt-4 text-gray-300/80 leading-relaxed text-base sm:text-lg" data-i18n="guest_desc">
+ Te avisamos, pagas el envío, y listo. Lo recibes con DHL Express con seguimiento.
+ </p>
+<div class="mt-7 grid grid-cols-1 sm:grid-cols-3 gap-3">
+<div class="stat-pill">
+<div class="text-sm text-dhl font-semibold" data-i18n="guest_stat1_label">Entrega típica</div>
+<div class="text-lg font-extrabold text-white mt-1" data-i18n="guest_stat1_value">24–48h</div>
+</div>
+<div class="stat-pill">
+<div class="text-sm text-dhl font-semibold" data-i18n="guest_stat2_label">Transparencia</div>
+<div class="text-lg font-extrabold text-white mt-1" data-i18n="guest_stat2_value">Tracking</div>
+</div>
+<div class="stat-pill">
+<div class="text-sm text-dhl font-semibold" data-i18n="guest_stat3_label">Chat de soporte</div>
+<div class="text-lg font-extrabold text-white mt-1" data-i18n="guest_stat3_value">24H</div>
+</div>
+</div>
+
+<ul class="mt-7 space-y-3 text-white/85">
+<li class="flex items-start gap-3">
+<i class="fa-solid fa-circle-check text-green-500 mt-1"></i>
+<span data-i18n="guest_b1"><b>Pago simple</b>: sin llamadas raras ni correos eternos.</span>
+</li>
+<li class="flex items-start gap-3">
+<i class="fa-solid fa-circle-check text-green-500 mt-1"></i>
+<span data-i18n="guest_b2"><b>Seguridad</b>: envío con partner global y opciones de cobertura.</span>
+</li>
+<li class="flex items-start gap-3">
+<i class="fa-solid fa-circle-check text-green-500 mt-1"></i>
+<span data-i18n="guest_b3"><b>Velocidad</b>: tu objeto vuelve rápido a casa.</span>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+</section>
+<section class="mx-auto max-w-[1400px] px-6 sm:px-8 lg:px-10 mb-16" id="dhl">
+<div class="relative overflow-hidden rounded-[2.5rem] sm:rounded-[3rem] border border-white/10 shadow-[0_30px_90px_rgba(0,0,0,0.45)] reveal" style="background: radial-gradient(900px 520px at 20% 25%, rgba(255,255,255,0.35), transparent 60%), linear-gradient(180deg,#FFD84A 0%, #F7D13B 55%, #F2C92E 100%);">
+<div class="absolute inset-0 opacity-30 pointer-events-none" style="background: radial-gradient(circle at 70% 65%, rgba(0,0,0,0.12), transparent 55%);"></div>
+<div class="relative z-10 p-7 sm:p-8 lg:p-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+<div class="max-w-xl">
+<h2 class="mt-6 text-[clamp(1.9rem,3vw,3.3rem)] leading-[0.95] font-extrabold text-black tracking-tight" data-i18n="dhl_title"><span class="sm:whitespace-nowrap">Logística de élite con el</span><br/><span class="relative inline-block sm:whitespace-nowrap">
+ Líder Global
+ <span class="absolute left-0 right-0 -bottom-2 h-[5px] bg-[#D40511] rounded-full opacity-90"></span>
+</span><span class="text-black sm:whitespace-nowrap">.</span></h2>
+<p class="mt-5 text-black/80 text-base sm:text-lg leading-relaxed" data-i18n="dhl_desc">
+ No usamos mensajerías locales. Tu objeto viaja exclusivamente por la red de <b>DHL Express</b>. Seguridad máxima, trazabilidad total.
+ </p>
+</div>
+<div class="w-full lg:w-[38%] flex justify-center lg:justify-end">
+<img alt="DHL" class="w-[200px] sm:w-[260px] lg:w-[300px] drop-shadow-[0_26px_60px_rgba(0,0,0,0.25)]" src="https://www.dhl.com/content/dam/dhl/global/core/images/logos/dhl-logo.svg"/>
+</div>
+</div>
+</div>
+</section>
+
+<!-- REVIEWS -->
+
+
+<section class="mx-auto max-w-[1400px] px-6 sm:px-8 lg:px-10 mb-16" id="trusted-by">
+  <div class="reveal">
+    <h2 class="text-dhl font-extrabold tracking-tight text-[clamp(1.9rem,3vw,3.1rem)] text-center" data-i18n="logos_title">Hoteles que ya confían en Lostit</h2>
+    <p class="mt-3 text-center text-white/80 text-[clamp(1rem,1.35vw,1.15rem)]" data-i18n="logos_subtitle">Cadenas y hoteles independientes en España — y creciendo.</p>
+  </div>
+
+  <div class="mt-10 rounded-[2.2rem] border border-white/10 bg-white/5 backdrop-blur-xl p-6 sm:p-8 shadow-[0_30px_90px_rgba(0,0,0,0.50)] reveal">
+    <div data-logo-grid class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-5 items-center">
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Hilton">
+        <img
+          data-domain="hilton.com"
+          src="https://logo.clearbit.com/hilton.com?size=160"
+          alt="Hilton logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Accor">
+        <img
+          data-domain="accor.com"
+          src="https://logo.clearbit.com/accor.com?size=160"
+          alt="Accor logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Meliá Hotels">
+        <img
+          data-domain="melia.com"
+          src="https://logo.clearbit.com/melia.com?size=160"
+          alt="Meliá Hotels logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="NH Hotels">
+        <img
+          data-domain="nh-hotels.com"
+          src="https://logo.clearbit.com/nh-hotels.com?size=160"
+          alt="NH Hotels logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Vincci Hoteles">
+        <img
+          data-domain="vinccihoteles.com"
+          src="https://logo.clearbit.com/vinccihoteles.com?size=160"
+          alt="Vincci Hoteles logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Catalonia Hotels">
+        <img
+          data-domain="cataloniahotels.com"
+          src="https://logo.clearbit.com/cataloniahotels.com?size=160"
+          alt="Catalonia Hotels logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="H10 Hotels">
+        <img
+          data-domain="h10hotels.com"
+          src="https://logo.clearbit.com/h10hotels.com?size=160"
+          alt="H10 Hotels logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Room Mate Hotels">
+        <img
+          data-domain="room-matehotels.com"
+          src="https://logo.clearbit.com/room-matehotels.com?size=160"
+          alt="Room Mate Hotels logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Leonardo Hotels">
+        <img
+          data-domain="leonardo-hotels.com"
+          src="https://logo.clearbit.com/leonardo-hotels.com?size=160"
+          alt="Leonardo Hotels logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Abba Hoteles">
+        <img
+          data-domain="abbahoteles.com"
+          src="https://logo.clearbit.com/abbahoteles.com?size=160"
+          alt="Abba Hoteles logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Best Hotels">
+        <img
+          data-domain="besthotels.es"
+          src="https://logo.clearbit.com/besthotels.es?size=160"
+          alt="Best Hotels logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Eveniahotels">
+        <img
+          data-domain="eveniahotels.com"
+          src="https://logo.clearbit.com/eveniahotels.com?size=160"
+          alt="Eveniahotels logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Princess Hotels">
+        <img
+          data-domain="princess-hotels.com"
+          src="https://logo.clearbit.com/princess-hotels.com?size=160"
+          alt="Princess Hotels logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="TOC Hostels">
+        <img
+          data-domain="tochostels.com"
+          src="https://logo.clearbit.com/tochostels.com?size=160"
+          alt="TOC Hostels logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="AC Hotels (ACHM)">
+        <img
+          data-domain="achmhotels.com"
+          src="https://logo.clearbit.com/achmhotels.com?size=160"
+          alt="AC Hotels (ACHM) logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Grup Soteras">
+        <img
+          data-domain="grup-soteras.com"
+          src="https://logo.clearbit.com/grup-soteras.com?size=160"
+          alt="Grup Soteras logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="SERHS Hotels">
+        <img
+          data-domain="grupserhs.com"
+          src="https://logo.clearbit.com/grupserhs.com?size=160"
+          alt="SERHS Hotels logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Hotels Madanis">
+        <img
+          data-domain="hotelmadanis.com"
+          src="https://logo.clearbit.com/hotelmadanis.com?size=160"
+          alt="Hotels Madanis logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Ramblas Hotels">
+        <img
+          data-domain="ramblashoteles.com"
+          src="https://logo.clearbit.com/ramblashoteles.com?size=160"
+          alt="Ramblas Hotels logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="4R Hotels">
+        <img
+          data-domain="4rhotels.com"
+          src="https://logo.clearbit.com/4rhotels.com?size=160"
+          alt="4R Hotels logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Adhochoteles">
+        <img
+          data-domain="adhochoteles.com"
+          src="https://logo.clearbit.com/adhochoteles.com?size=160"
+          alt="Adhochoteles logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Balandret">
+        <img
+          data-domain="balandret.com"
+          src="https://logo.clearbit.com/balandret.com?size=160"
+          alt="Balandret logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Californiapalace">
+        <img
+          data-domain="californiapalace.com"
+          src="https://logo.clearbit.com/californiapalace.com?size=160"
+          alt="Californiapalace logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Capribyfraser">
+        <img
+          data-domain="capribyfraser.com"
+          src="https://logo.clearbit.com/capribyfraser.com?size=160"
+          alt="Capribyfraser logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Catshostels">
+        <img
+          data-domain="catshostels.com"
+          src="https://logo.clearbit.com/catshostels.com?size=160"
+          alt="Catshostels logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Citadines">
+        <img
+          data-domain="citadines.com"
+          src="https://logo.clearbit.com/citadines.com?size=160"
+          alt="Citadines logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Derbyhotels">
+        <img
+          data-domain="derbyhotels.com"
+          src="https://logo.clearbit.com/derbyhotels.com?size=160"
+          alt="Derbyhotels logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Eljardi">
+        <img
+          data-domain="eljardi.com"
+          src="https://logo.clearbit.com/eljardi.com?size=160"
+          alt="Eljardi logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Eurohotelgranviafira">
+        <img
+          data-domain="eurohotelgranviafira.com"
+          src="https://logo.clearbit.com/eurohotelgranviafira.com?size=160"
+          alt="Eurohotelgranviafira logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Florlosalmendros">
+        <img
+          data-domain="florlosalmendros.com"
+          src="https://logo.clearbit.com/florlosalmendros.com?size=160"
+          alt="Florlosalmendros logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Galleryhoteles">
+        <img
+          data-domain="galleryhoteles.com"
+          src="https://logo.clearbit.com/galleryhoteles.com?size=160"
+          alt="Galleryhoteles logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Grandhotelcentral">
+        <img
+          data-domain="grandhotelcentral.com"
+          src="https://logo.clearbit.com/grandhotelcentral.com?size=160"
+          alt="Grandhotelcentral logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Groupepvcp">
+        <img
+          data-domain="groupepvcp.com"
+          src="https://logo.clearbit.com/groupepvcp.com?size=160"
+          alt="Groupepvcp logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Grupduquessa">
+        <img
+          data-domain="grupduquessa.com"
+          src="https://logo.clearbit.com/grupduquessa.com?size=160"
+          alt="Grupduquessa logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Grupolasacristiatarifa">
+        <img
+          data-domain="grupolasacristiatarifa.com"
+          src="https://logo.clearbit.com/grupolasacristiatarifa.com?size=160"
+          alt="Grupolasacristiatarifa logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+<div class="logo-tile group flex items-center justify-center rounded-2xl bg-white/95 border border-white/20 px-4 py-4 h-16 sm:h-[4.25rem] shadow-[0_18px_40px_rgba(0,0,0,0.30)] transition transform-gpu hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.42)]" data-logo-wrap data-name="Haciendadelcardenal">
+        <img
+          data-domain="haciendadelcardenal.com"
+          src="https://logo.clearbit.com/haciendadelcardenal.com?size=160"
+          alt="Haciendadelcardenal logo"
+          class="max-h-9 sm:max-h-10 w-auto object-contain opacity-95 grayscale-[0.15] transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+          loading="lazy"
+          decoding="async"
+          referrerpolicy="no-referrer"
+          onerror="window.__lostitLogoFallback && window.__lostitLogoFallback(this)"
+        />
+      </div>
+    </div>
+
+    <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="inline-flex items-center gap-2 rounded-full bg-dhl/15 text-dhl border border-dhl/30 px-4 py-2 text-sm font-semibold">
+        <i class="fa-solid fa-hotel"></i>
+        <span data-i18n="logos_badge">+152 hoteles registrados</span>
+      </div>
+      <div class="text-white/65 text-sm text-center sm:text-right" data-i18n="logos_note">Logos de hoteles y cadenas con cuenta activa en Lostit.</div>
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-[1400px] px-6 sm:px-8 lg:px-10 mb-16" id="reviews">
+  <div class="reveal">
+    <h2 class="text-dhl font-extrabold tracking-tight text-[clamp(1.9rem,3vw,3.1rem)] mb-8 text-center" data-i18n="reviews_title">Valoraciones de nuestro servicio</h2>
+  </div>
+
+  <div class="grid gap-6 lg:gap-8 md:grid-cols-3 reveal">
+    <!-- Review 1 -->
+    <div class="review-card rounded-[1.9rem] p-7 sm:p-8 text-center">
+      <div class="flex items-center justify-center gap-1 text-dhl text-sm mb-4" aria-label="5 stars">
+        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+      </div>
+      <p class="text-slate-900 leading-relaxed">
+        <span class="text-slate-500">“</span><span data-i18n="review1_text">Servicio excelente, la web muy sencilla de utilizar y el servicio de atención al cliente muy resolutivo.</span><span class="text-slate-500">”</span>
+      </p>
+      <div class="mt-6">
+        <div class="font-extrabold text-slate-900" data-i18n="review1_name">Catalonia Rigoletto</div>
+        <div class="text-sm text-slate-600" data-i18n="review1_role">Recepción</div>
+      </div>
+    </div>
+
+    <!-- Review 2 -->
+    <div class="review-card rounded-[1.9rem] p-7 sm:p-8 text-center">
+      <div class="flex items-center justify-center gap-1 text-dhl text-sm mb-4" aria-label="5 stars">
+        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+      </div>
+      <p class="text-slate-900 leading-relaxed">
+        <span class="text-slate-500">“</span><span data-i18n="review2_text">Por trabajo necesito hacer muchos envíos de paquetería y la verdad que con esta empresa todo es muy sencillo y muy rápido de gestionar. Llevo ya más de 100 envíos y por el momento no ha habido ningún problema. Súper recomendable. Además la asistencia telefónica es muy buena y siempre te ayudan.</span><span class="text-slate-500">”</span>
+      </p>
+      <div class="mt-6">
+        <div class="font-extrabold text-slate-900" data-i18n="review2_name">Suites Avenue Luxe</div>
+        <div class="text-sm text-slate-600" data-i18n="review2_role">Javier Arlandiz</div>
+      </div>
+    </div>
+
+    <!-- Review 3 -->
+    <div class="review-card rounded-[1.9rem] p-7 sm:p-8 text-center">
+      <div class="flex items-center justify-center gap-1 text-dhl text-sm mb-4" aria-label="5 stars">
+        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+      </div>
+      <p class="text-slate-900 leading-relaxed">
+        <span class="text-slate-500">“</span><span data-i18n="review3_text">100% recomendado, rápido y fiable. Atención y servicio excelente.</span><span class="text-slate-500">”</span>
+      </p>
+      <div class="mt-6">
+        <div class="font-extrabold text-slate-900" data-i18n="review3_name">Hotel Calipolis Sitges 4*</div>
+        <div class="text-sm text-slate-600" data-i18n="review3_role">Eduardo Luque Murcia</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="mx-auto max-w-[1400px] px-6 sm:px-8 lg:px-10 mb-10" id="faq">
+  <div class="reveal">
+    <h2 class="text-dhl font-extrabold tracking-tight text-[clamp(1.9rem,3vw,3.1rem)] mb-8 text-center" data-i18n="faq_title">Preguntas frecuentes</h2>
+  </div>
+
+  <div class="faq grid gap-4 lg:gap-5 md:grid-cols-2 lg:grid-cols-3 reveal">
+    <details class="group rounded-2xl bg-white/95 text-slate-900 border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.40)]">
+      <summary class="px-5 py-4 cursor-pointer flex items-center gap-3 font-semibold">
+        <i class="fa-solid fa-caret-right text-slate-600 faq-chevron"></i>
+        <span data-i18n="faq_q1">¿Cuánto tarda en recogerse el paquete?</span>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-slate-700 leading-relaxed" data-i18n="faq_a1">Tras el pago, solicitamos recogida con DHL en el hotel. Normalmente pasa el siguiente día laborable (según zona y disponibilidad).</div>
+    </details>
+
+    <details class="group rounded-2xl bg-white/95 text-slate-900 border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.40)]">
+      <summary class="px-5 py-4 cursor-pointer flex items-center gap-3 font-semibold">
+        <i class="fa-solid fa-caret-right text-slate-600 faq-chevron"></i>
+        <span data-i18n="faq_q2">¿El hotel paga algo?</span>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-slate-700 leading-relaxed" data-i18n="faq_a2">No. 0€ para el hotel: alta, panel y flujo automatizado. El envío lo paga el huésped cuando solicita la devolución.</div>
+    </details>
+
+    <details class="group rounded-2xl bg-white/95 text-slate-900 border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.40)]">
+      <summary class="px-5 py-4 cursor-pointer flex items-center gap-3 font-semibold">
+        <i class="fa-solid fa-caret-right text-slate-600 faq-chevron"></i>
+        <span data-i18n="faq_q3">¿Qué países cubre DHL?</span>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-slate-700 leading-relaxed" data-i18n="faq_a3">Enviamos a prácticamente todo el mundo con DHL Express. La tarifa se calcula según el país de la dirección de entrega.</div>
+    </details>
+
+    <details class="group rounded-2xl bg-white/95 text-slate-900 border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.40)]">
+      <summary class="px-5 py-4 cursor-pointer flex items-center gap-3 font-semibold">
+        <i class="fa-solid fa-caret-right text-slate-600 faq-chevron"></i>
+        <span data-i18n="faq_q4">¿Qué pasa si no se puede recoger?</span>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-slate-700 leading-relaxed" data-i18n="faq_a4">Reprogramamos la recogida y te avisamos. Si hay incidencias, nuestro soporte lo gestiona contigo.</div>
+    </details>
+
+    <details class="group rounded-2xl bg-white/95 text-slate-900 border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.40)]">
+      <summary class="px-5 py-4 cursor-pointer flex items-center gap-3 font-semibold">
+        <i class="fa-solid fa-caret-right text-slate-600 faq-chevron"></i>
+        <span data-i18n="faq_q5">¿Tiene coste para el hotel?</span>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-slate-700 leading-relaxed" data-i18n="faq_a5">0€ para el hotel: alta, panel y flujo automatizado. El huésped paga el envío cuando solicita la devolución.</div>
+    </details>
+
+    <details class="group rounded-2xl bg-white/95 text-slate-900 border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.40)]">
+      <summary class="px-5 py-4 cursor-pointer flex items-center gap-3 font-semibold">
+        <i class="fa-solid fa-caret-right text-slate-600 faq-chevron"></i>
+        <span data-i18n="faq_q6">¿Cómo se calcula el idioma y las tarifas?</span>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-slate-700 leading-relaxed" data-i18n="faq_a6">El email y el checkout se adaptan al país de residencia del huésped. La tarifa se calcula con el país de la dirección de entrega.</div>
+    </details>
+
+    <details class="group rounded-2xl bg-white/95 text-slate-900 border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.40)]">
+      <summary class="px-5 py-4 cursor-pointer flex items-center gap-3 font-semibold">
+        <i class="fa-solid fa-caret-right text-slate-600 faq-chevron"></i>
+        <span data-i18n="faq_q7">¿Quién recoge el paquete?</span>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-slate-700 leading-relaxed" data-i18n="faq_a7">DHL recoge el paquete en recepción del hotel (nuestro único transportista).</div>
+    </details>
+
+    <details class="group rounded-2xl bg-white/95 text-slate-900 border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.40)]">
+      <summary class="px-5 py-4 cursor-pointer flex items-center gap-3 font-semibold">
+        <i class="fa-solid fa-caret-right text-slate-600 faq-chevron"></i>
+        <span data-i18n="faq_q8">¿Cumple con RGPD?</span>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-slate-700 leading-relaxed" data-i18n="faq_a8">Sí. Pedimos datos mínimos para gestionar el envío y aplicamos medidas de seguridad y acceso limitado.</div>
+    </details>
+
+    <details class="group rounded-2xl bg-white/95 text-slate-900 border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.40)]">
+      <summary class="px-5 py-4 cursor-pointer flex items-center gap-3 font-semibold">
+        <i class="fa-solid fa-caret-right text-slate-600 faq-chevron"></i>
+        <span data-i18n="faq_q9">¿Puedo empezar hoy?</span>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-slate-700 leading-relaxed" data-i18n="faq_a9">Sí. Te registras en 30 segundos y te enviamos sobres y cajas DHL (1–4) para empezar.</div>
+    </details>
+
+    <details class="group rounded-2xl bg-white/95 text-slate-900 border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.40)]">
+      <summary class="px-5 py-4 cursor-pointer flex items-center gap-3 font-semibold">
+        <i class="fa-solid fa-caret-right text-slate-600 faq-chevron"></i>
+        <span data-i18n="faq_q10">¿Enviáis cajas plegables y sobres?</span>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-slate-700 leading-relaxed" data-i18n="faq_a10">Sí. En el onboarding enviamos sobres y cajas gratuitas para que el hotel pueda preparar los envíos.</div>
+    </details>
+
+    <details class="group rounded-2xl bg-white/95 text-slate-900 border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.40)]">
+      <summary class="px-5 py-4 cursor-pointer flex items-center gap-3 font-semibold">
+        <i class="fa-solid fa-caret-right text-slate-600 faq-chevron"></i>
+        <span data-i18n="faq_q11">¿Qué pasa si el huésped no paga?</span>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-slate-700 leading-relaxed" data-i18n="faq_a11">No se genera la etiqueta ni se solicita la recogida hasta que se complete el pago. El objeto permanece en el hotel.</div>
+    </details>
+
+    <details class="group rounded-2xl bg-white/95 text-slate-900 border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.40)]">
+      <summary class="px-5 py-4 cursor-pointer flex items-center gap-3 font-semibold">
+        <i class="fa-solid fa-caret-right text-slate-600 faq-chevron"></i>
+        <span data-i18n="faq_q12">¿Tengo que pesar o medir el paquete?</span>
+      </summary>
+      <div class="px-5 pb-5 text-sm text-slate-700 leading-relaxed" data-i18n="faq_a12">No. Seleccionas el tipo de embalaje (sobre/caja) y el sistema calcula la tarifa y genera la etiqueta.</div>
+    </details>
+  </div>
+</section>
+
+<div class="h-14"></div>
+</div>
+</main>
+<footer class="relative bg-[#0b0718] py-12 text-gray-400 border-t border-white/5">
+<div class="absolute left-[10%] right-[10%] top-0 h-[2px] bg-gradient-to-r from-transparent via-[rgba(255,204,0,0.35)] to-transparent"></div>
+<div class="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-10">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+<div>
+<div class="flex items-center gap-3 font-bold text-2xl tracking-tight text-white">
+<div class="w-4 h-4 rounded-full bg-dhl shadow-[0_0_15px_#FFCC00]"></div>
+ Lostit
+ </div>
+<p class="mt-3 text-sm text-white/45 max-w-md" data-i18n="footer_desc">
+ La forma moderna de gestionar objetos perdidos con un flujo simple y logística global.
+ </p>
+</div>
+<div class="flex flex-wrap gap-x-8 gap-y-3 text-sm">
+<a class="text-white/65 hover:text-white transition" data-i18n="nav_how" href="#como-funciona">Cómo funciona</a>
+<a class="text-white/65 hover:text-white transition" data-i18n="nav_solutions" href="#targets">Soluciones</a>
+<a class="text-white/65 hover:text-white transition" data-i18n="nav_partner" href="#dhl">Partnership</a>
+<a class="text-white/65 hover:text-white transition" data-i18n="nav_privacy" href="#">Privacidad</a>
+</div>
+</div>
+<div class="mt-10 divider-soft"></div>
+<div class="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-white/40">
+<p data-i18n="footer_copy">© 2024 Lostit Technologies. Todos los derechos reservados.</p>
+</div>
+</div>
+</footer>
+<script>
+ function toggleMobileMenu() {
+ const menu = document.getElementById('mobile-menu');
+ menu.classList.toggle('hidden');
+ menu.classList.toggle('flex');
+ }
+
+ // Reveal on scroll (small polish)
+ (function(){
+ const els = document.querySelectorAll('.reveal');
+ const io = new IntersectionObserver((entries)=>{
+ entries.forEach(e=>{
+ if(e.isIntersecting){
+ e.target.classList.add('is-visible');
+ io.unobserve(e.target);
+ }
+ });
+ }, { threshold: 0.12 });
+ els.forEach(el=> io.observe(el));
+ })();
+ </script><script id="i18n-script">(function(){
+ const T = {
+ es: {
+ nav_how: "Cómo funciona",
+ nav_solutions: "Soluciones",
+ nav_partner: "Partnership",
+ nav_privacy: "Privacidad",
+ nav_register: "Registrar mi hotel",
+ nav_account: "Mi cuenta",
+
+ hero_kicker_full: "<span class=\"text-dhl font-extrabold\"><span class=\"text-white\">Lostit</span>: la solución para devolver objetos olvidados.</span>",
+ hero_title_line1: "El Superhéroe de los",
+ hero_title_line2: "Objetos Olvidados",
+
+ hero_bullet1: "<span class=\"text-dhl font-semibold\">Hoteles:</span> <span class=\"text-gray-100 font-semibold\">sin contrato, sin costes y sin instalación Software.</span>",
+ hero_bullet2: "Registra online el objeto en <span class=\"text-gray-100 font-semibold\">30s</span>. Sin llamadas, sin emails y sin medir ni pesar los envíos.",
+ hero_bullet3: "Todo queda registrado en tu panel: <span class=\"text-gray-100 font-semibold\">estado de devolución</span> + <span class=\"text-gray-100 font-semibold\">nº de seguimiento</span>.",
+ hero_bullet4: "Envíos gestionados con <span class=\"text-dhl font-semibold\">DHL</span> <span class=\"text-white/70\">(nº 1 del mundo en logística).</span>",
+ hero_bullet5: "<span class=\"text-gray-100 font-semibold\">Cajas y sobres gratis</span> para los envíos.",
+
+ cta_register: "<span class=\"flex items-center justify-center gap-2\"><i class=\"fa-solid fa-hotel\"></i> Registrar mi hotel <i class=\"fa-solid fa-arrow-right-long opacity-70 group-hover:translate-x-1 transition-transform\"></i></span><span class=\"block text-[11px] font-semibold text-black/70 mt-1 tracking-wide\">Gratis · En 30s · Cajas incluidas</span>",
+
+ mini_1: "<i class=\"fa-solid fa-bolt text-green-500\"></i> 30s para registro",
+ mini_2: "<i class=\"fa-solid fa-circle-check text-green-500\"></i> 0€ coste hotel",
+ mini_3: "<i class=\"fa-solid fa-box-open text-dhl\"></i> Cajas de envío gratis",
+
+ pill1_title: "Envío con DHL únicamente",
+ pill1_sub: "recogida en recepción",
+ pill2_title: "Entrega 24-48h *",
+ pill2_sub: "Etiqueta automática / Nº Tracking",
+ pill3_title: "Chat de suporte 24h",
+
+ partners_kicker: "Confianza de líderes del sector",
+
+ mission_title_1: "Misión:",
+ mission_title_2: "Recuperación Express",
+ mission_sub: "Tres pasos para convertir una pérdida en una experiencia premium.",
+ step1_title: "El Hotel Registra",
+ step1_desc: "El personal registra el objeto en ~30 segundos con la opción de subir una foto del objeto.",
+ step1_badge: "Sin formularios eternos",
+ step2_title: "Magia Automática",
+ step2_desc: "El huésped recibe un email con un enlace, introduce la dirección, ve la tarifa al instante y paga online (Opción de pago por el hotel).",
+ step2_badge: "Notificaciones + tracking",
+ step3_title: "Misión Cumplida",
+ step3_desc: "El hotel recibe la etiqueta automáticamente. DHL recoge el paquete en recepción. El objeto vuelve a casa con envío seguro.",
+ step3_badge: "Seguridad y control",
+
+ solutions_kicker: "Soluciones",
+ solutions_title: "Diseñado para hoteles. Amado por huéspedes.",
+ solutions_sub: "",
+
+ hotel_badge: "<i class=\"fa-solid fa-hotel text-dhl\"></i> Hotel / Partner",
+ hotel_title: "Lostit la herramienta super intuitiva, rápida y optimizada para reducir por completo el trabajo del recepcionista.",
+ hotel_desc: "",
+ hotel_stat1_label: "Registro",
+ hotel_stat1_value: "~30 segundos",
+ hotel_stat2_label: "Coste para el hotel",
+ hotel_stat2_value: "0€",
+ hotel_stat3_label: "Chat de soporte",
+ hotel_stat3_value: "24H",
+ hotel_b1: "<b>Devolución rapida</b>: Sin llamar al cliente, sin enviarle un email y sin medir ni pesar los envíos.",
+ hotel_b2: "<b>Control</b>: tracking, notificaciones y todo centralizado.",
+ hotel_b3: "<b>Tu imagen</b>: conviertes un “problema” en un servicio premium.",
+ hotel_btn_register: "<i class=\"fa-solid fa-user-plus mr-2\"></i> Registrar mi hotel",
+ hotel_btn_demo: "<i class=\"fa-solid fa-circle-play mr-2 text-dhl\"></i> Ver demo",
+
+ guest_badge: "<i class=\"fa-solid fa-briefcase text-dhl\"></i> Huésped",
+ guest_title: "Recuperación rápida.<span class=\"text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400\"> Sin líos.</span>",
+ guest_desc: "Te avisamos, pagas el envío, y listo. Lo recibes con DHL Express con seguimiento.",
+ guest_stat1_label: "Entrega típica",
+ guest_stat1_value: "24–48h",
+ guest_stat2_label: "Transparencia",
+ guest_stat2_value: "Tracking",
+ guest_stat3_label: "Chat de soporte",
+ guest_stat3_value: "24H",
+ guest_b1: "<b>Pago simple</b>: sin llamadas raras ni correos eternos.",
+ guest_b2: "<b>Seguridad</b>: envío con partner global y opciones de cobertura.",
+ guest_b3: "<b>Velocidad</b>: tu objeto vuelve rápido a casa.",
+
+ dhl_title: "<span class=\"sm:whitespace-nowrap\">Logística de élite con el</span><br/><span class=\"relative inline-block sm:whitespace-nowrap\">Líder Global<span class=\"absolute left-0 right-0 -bottom-2 h-[5px] bg-[#D40511] rounded-full opacity-90\"></span></span><span class=\"text-black sm:whitespace-nowrap\">.</span>",
+ dhl_desc: "No usamos mensajerías locales. Tu objeto viaja exclusivamente por la red de <b>DHL Express</b>. Seguridad máxima, trazabilidad total.",
+
+ logos_title: "Hoteles que ya confían en Lostit",
+ logos_subtitle: "Cadenas y hoteles independientes en España — y creciendo.",
+ logos_badge: "+152 hoteles registrados",
+ logos_note: "Logos de hoteles y cadenas con cuenta activa en Lostit.",
+
+ reviews_title: "Valoraciones de nuestro servicio",
+ review1_text: "Servicio excelente, la web muy sencilla de utilizar y el servicio de atención al cliente muy resolutivo.",
+ review1_name: "Catalonia Rigoletto",
+ review1_role: "Recepción",
+ review2_text: "Por trabajo necesito hacer muchos envíos de paquetería y la verdad que con esta empresa todo es muy sencillo y muy rápido de gestionar. Llevo ya más de 100 envíos y por el momento no ha habido ningún problema. Súper recomendable. Además la asistencia telefónica es muy buena y siempre te ayudan.",
+ review2_name: "Suites Avenue Luxe",
+ review2_role: "Javier Arlandiz",
+ review3_text: "100% recomendado, rápido y fiable. Atención y servicio excelente.",
+ review3_name: "Hotel Calipolis Sitges 4*",
+ review3_role: "Eduardo Luque Murcia",
+
+ faq_title: "Preguntas frecuentes",
+ faq_q1: "¿Cuánto tarda en recogerse el paquete?",
+ faq_a1: "Tras el pago, solicitamos recogida con DHL en el hotel. Normalmente pasa el siguiente día laborable (según zona y disponibilidad).",
+ faq_q2: "¿El hotel paga algo?",
+ faq_a2: "No. 0€ para el hotel: alta, panel y flujo automatizado. El envío lo paga el huésped cuando solicita la devolución.",
+ faq_q3: "¿Qué países cubre DHL?",
+ faq_a3: "Enviamos a prácticamente todo el mundo con DHL Express. La tarifa se calcula según el país de la dirección de entrega.",
+ faq_q4: "¿Qué pasa si no se puede recoger?",
+ faq_a4: "Reprogramamos la recogida y te avisamos. Si hay incidencias, nuestro soporte lo gestiona contigo.",
+ faq_q5: "¿Tiene coste para el hotel?",
+ faq_a5: "0€ para el hotel: alta, panel y flujo automatizado. El huésped paga el envío cuando solicita la devolución.",
+ faq_q6: "¿Cómo se calcula el idioma y las tarifas?",
+ faq_a6: "El email y el checkout se adaptan al país de residencia del huésped. La tarifa se calcula con el país de la dirección de entrega.",
+ faq_q7: "¿Quién recoge el paquete?",
+ faq_a7: "DHL recoge el paquete en recepción del hotel (nuestro único transportista).",
+ faq_q8: "¿Cumple con RGPD?",
+ faq_a8: "Sí. Pedimos datos mínimos para gestionar el envío y aplicamos medidas de seguridad y acceso limitado.",
+ faq_q9: "¿Puedo empezar hoy?",
+ faq_a9: "Sí. Te registras en 30 segundos y te enviamos sobres y cajas DHL (1–4) para empezar.",
+ faq_q10: "¿Enviáis cajas plegables y sobres?",
+ faq_a10: "Sí. En el onboarding enviamos sobres y cajas gratuitas para que el hotel pueda preparar los envíos.",
+ faq_q11: "¿Qué pasa si el huésped no paga?",
+ faq_a11: "No se genera la etiqueta ni se solicita la recogida hasta que se complete el pago. El objeto permanece en el hotel.",
+ faq_q12: "¿Tengo que pesar o medir el paquete?",
+ faq_a12: "No. Seleccionas el tipo de embalaje (sobre/caja) y el sistema calcula la tarifa y genera la etiqueta.",
+
+ footer_desc: "La forma moderna de gestionar objetos perdidos con un flujo simple y logística global.",
+ footer_copy: "© 2024 Lostit Technologies. Todos los derechos reservados.",
+ footer_note: ""
+ },
+
+ en: {
+ nav_how: "How it works",
+ nav_solutions: "Solutions",
+ nav_partner: "Partnership",
+ nav_privacy: "Privacy",
+ nav_register: "Register my hotel",
+ nav_account: "My account",
+
+ hero_kicker_full: "<span class=\"text-dhl font-extrabold\"><span class=\"text-white\">Lostit</span>: the solution to return lost items.</span>",
+ hero_title_line1: "The Superhero of",
+ hero_title_line2: "Forgotten Items",
+
+ hero_bullet1: "<span class=\"text-dhl font-semibold\">Hotels:</span> <span class=\"text-gray-100 font-semibold\">no contracts, no costs, no software installation.</span>",
+ hero_bullet2: "Register the item online in <span class=\"text-gray-100 font-semibold\">30s</span>. No calls, no emails, no measuring or weighing.",
+ hero_bullet3: "Everything is tracked in your dashboard: <span class=\"text-gray-100 font-semibold\">return status</span> + <span class=\"text-gray-100 font-semibold\">tracking number</span>.",
+ hero_bullet4: "Shipments handled with <span class=\"text-dhl font-semibold\">DHL</span> <span class=\"text-white/70\">(world’s #1 in logistics).</span>",
+ hero_bullet5: "<span class=\"text-gray-100 font-semibold\">Free boxes and envelopes</span> for shipping.",
+
+ cta_register: "<span class=\"flex items-center justify-center gap-2\"><i class=\"fa-solid fa-hotel\"></i> Register my hotel <i class=\"fa-solid fa-arrow-right-long opacity-70 group-hover:translate-x-1 transition-transform\"></i></span><span class=\"block text-[11px] font-semibold text-black/70 mt-1 tracking-wide\">Free · 30s · Boxes included</span>",
+
+ mini_1: "<i class=\"fa-solid fa-bolt text-green-500\"></i> 30s registration",
+ mini_2: "<i class=\"fa-solid fa-circle-check text-green-500\"></i> €0 hotel cost",
+ mini_3: "<i class=\"fa-solid fa-box-open text-dhl\"></i> Free shipping boxes",
+
+ pill1_title: "DHL-only shipping",
+ pill1_sub: "pickup at reception",
+ pill2_title: "Delivery 24–48h *",
+ pill2_sub: "Auto label / Tracking No.",
+ pill3_title: "24h support chat",
+
+ partners_kicker: "Trusted by industry leaders",
+
+ mission_title_1: "Mission:",
+ mission_title_2: "Express Recovery",
+ mission_sub: "Three steps to turn a loss into a premium experience.",
+ step1_title: "Hotel Registers",
+ step1_desc: "Staff registers the item in ~30 seconds with the option to upload a photo.",
+ step1_badge: "No endless forms",
+ step2_title: "Automatic Magic",
+ step2_desc: "The guest receives an email link, enters the address, sees the price instantly and pays online (hotel-paid option available). Lostit generates the label automatically.",
+ step2_badge: "Notifications + tracking",
+ step3_title: "Mission Complete",
+ step3_desc: "DHL picks up at reception. The item gets home with secure shipping.",
+ step3_badge: "Security & control",
+
+ solutions_kicker: "Solutions",
+ solutions_title: "Built for hotels. Loved by guests.",
+ solutions_sub: "",
+
+ hotel_badge: "<i class=\"fa-solid fa-hotel text-dhl\"></i> Hotel / Partner",
+ hotel_title: "Less front-desk work with Lostit: super intuitive, fast, and optimized to drastically reduce the receptionist’s workload.",
+ hotel_desc: "Register the item. The guest pays, receives the label, and DHL picks up at the hotel.",
+ hotel_stat1_label: "Setup & registration",
+ hotel_stat1_value: "~60 seconds",
+ hotel_stat2_label: "Hotel cost",
+ hotel_stat2_value: "€0",
+ hotel_stat3_label: "Support chat",
+ hotel_stat3_value: "24H",
+ hotel_b1: "<b>Communication</b>: no need to contact the guest — no emails or calls.",
+ hotel_b2: "<b>Control</b>: tracking, notifications and everything centralized.",
+ hotel_b3: "<b>Your image</b>: you turn a “problem” into a premium service.",
+ hotel_btn_register: "<i class=\"fa-solid fa-user-plus mr-2\"></i> Register my hotel",
+ hotel_btn_demo: "<i class=\"fa-solid fa-circle-play mr-2 text-dhl\"></i> Watch demo",
+
+ guest_badge: "<i class=\"fa-solid fa-briefcase text-dhl\"></i> Guest",
+ guest_title: "Fast recovery.<span class=\"text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400\"> No hassle.</span>",
+ guest_desc: "We notify you, you pay the shipment, done. Delivered with DHL Express tracking.",
+ guest_stat1_label: "Typical delivery",
+ guest_stat1_value: "24–48h",
+ guest_stat2_label: "Transparency",
+ guest_stat2_value: "Tracking",
+ guest_stat3_label: "Support chat",
+ guest_stat3_value: "24H",
+ guest_b1: "<b>Simple payment</b>: no weird calls or endless emails.",
+ guest_b2: "<b>Security</b>: global partner shipping with coverage options.",
+ guest_b3: "<b>Speed</b>: your item gets home fast.",
+
+ dhl_title: "<span class=\"sm:whitespace-nowrap\">Elite logistics with the</span><br/><span class=\"relative inline-block sm:whitespace-nowrap\">Global Leader<span class=\"absolute left-0 right-0 -bottom-2 h-[5px] bg-[#D40511] rounded-full opacity-90\"></span></span><span class=\"text-black sm:whitespace-nowrap\">.</span>",
+ dhl_desc: "We don’t use local couriers. Your item travels exclusively on the <b>DHL Express</b> network. Maximum security, full traceability.",
+
+ logos_title: "Hotels already trusting Lostit",
+ logos_subtitle: "Chains and independent hotels in Spain — and growing.",
+ logos_badge: "+152 hotels onboarded",
+ logos_note: "Logos from hotels and groups with an active Lostit account.",
+
+ reviews_title: "Service reviews",
+ review1_text: "Excellent service. The website is very easy to use and customer support is extremely helpful.",
+ review1_name: "Catalonia Rigoletto",
+ review1_role: "Front desk",
+ review2_text: "For work I need to ship many parcels, and with this company everything is very simple and fast to manage. I’ve done 100+ shipments so far and there hasn’t been a single issue. Highly recommended. Phone support is also great and they always help you out.",
+ review2_name: "Suites Avenue Luxe",
+ review2_role: "Javier Arlandiz",
+ review3_text: "100% recommended — fast, reliable, and excellent service.",
+ review3_name: "Hotel Calipolis Sitges 4*",
+ review3_role: "Eduardo Luque Murcia",
+
+ faq_title: "Frequently asked questions",
+ faq_q1: "How long until pickup?",
+ faq_a1: "After payment, we request DHL pickup at the hotel. Typically it’s collected the next business day (depending on area and availability).",
+ faq_q2: "Does the hotel pay anything?",
+ faq_a2: "No. The hotel pays nothing: the guest pays the shipment, or you can charge it to the hotel if you prefer.",
+ faq_q3: "Which countries does DHL cover?",
+ faq_a3: "We ship to almost anywhere worldwide with DHL Express. The price is calculated based on the destination country (shipping address).",
+ faq_q4: "What if pickup can’t be done?",
+ faq_a4: "We reschedule the pickup and notify you. If there’s any issue, our support team handles it with you.",
+ faq_q5: "Is there any cost for the hotel?",
+ faq_a5: "€0 for the hotel: onboarding, dashboard and automation. The guest pays shipping when requesting the return.",
+ faq_q6: "How are language and rates calculated?",
+ faq_a6: "Email/checkout language follows the guest’s country of residence. Shipping rates are calculated using the destination country (shipping address).",
+ faq_q7: "Who picks up the parcel?",
+ faq_a7: "DHL picks up at the hotel reception (our only carrier).",
+ faq_q8: "Is it GDPR compliant?",
+ faq_a8: "Yes. We collect the minimum data needed to ship and apply security and access controls.",
+ faq_q9: "Can I start today?",
+ faq_a9: "Yes. Register in 30 seconds and we send DHL envelopes and boxes (1–4) so you can start.",
+ faq_q10: "Do you send boxes and envelopes?",
+ faq_a10: "Yes. During onboarding we send free envelopes and boxes for preparing shipments at the hotel.",
+ faq_q11: "What if the guest doesn’t pay?",
+ faq_a11: "No label is created and no pickup is requested until payment is completed. The item stays at the hotel.",
+ faq_q12: "Do I need to weigh or measure the parcel?",
+ faq_a12: "No. Select the packaging type (envelope/box) and the system calculates the price and generates the label.",
+
+ footer_desc: "A modern way to manage lost & found with a simple flow and global logistics.",
+ footer_copy: "© 2024 Lostit Technologies. All rights reserved.",
+ footer_note: ""
+ },
+
+ ca: {
+ nav_how: "Com funciona",
+ nav_solutions: "Solucions",
+ nav_partner: "Partnership",
+ nav_privacy: "Privacitat",
+ nav_register: "Registrar el meu hotel",
+ nav_account: "El meu compte",
+
+ hero_kicker_full: "<span class=\"text-dhl font-extrabold\"><span class=\"text-white\">Lostit</span>: la solució per retornar objectes oblidats.</span>",
+ hero_title_line1: "El Superheroi dels",
+ hero_title_line2: "Objectes Oblidats",
+
+ hero_bullet1: "<span class=\"text-dhl font-semibold\">Hotels:</span> <span class=\"text-gray-100 font-semibold\">sense contracte, sense costos i sense instal·lació de software.</span>",
+ hero_bullet2: "Registra online l’objecte en <span class=\"text-gray-100 font-semibold\">30s</span>. Sense trucades, sense correus i sense mesurar ni pesar.",
+ hero_bullet3: "Tot queda registrat al teu panell: <span class=\"text-gray-100 font-semibold\">estat de devolució</span> + <span class=\"text-gray-100 font-semibold\">nº de seguiment</span>.",
+ hero_bullet4: "Enviaments gestionats amb <span class=\"text-dhl font-semibold\">DHL</span> <span class=\"text-white/70\">(nº 1 del món en logística).</span>",
+ hero_bullet5: "<span class=\"text-gray-100 font-semibold\">Caixes i sobres gratis</span> per als enviaments.",
+
+ cta_register: "<span class=\"flex items-center justify-center gap-2\"><i class=\"fa-solid fa-hotel\"></i> Registrar el meu hotel <i class=\"fa-solid fa-arrow-right-long opacity-70 group-hover:translate-x-1 transition-transform\"></i></span><span class=\"block text-[11px] font-semibold text-black/70 mt-1 tracking-wide\">Gratis · 30s · Caixes incloses</span>",
+
+ mini_1: "<i class=\"fa-solid fa-bolt text-green-500\"></i> 30s per registrar",
+ mini_2: "<i class=\"fa-solid fa-circle-check text-green-500\"></i> 0€ cost hotel",
+ mini_3: "<i class=\"fa-solid fa-box-open text-dhl\"></i> Caixes d’enviament gratis",
+
+ pill1_title: "Enviament només amb DHL",
+ pill1_sub: "recollida a recepció",
+ pill2_title: "Entrega 24–48h *",
+ pill2_sub: "Etiqueta automàtica / Nº Tracking",
+ pill3_title: "Xat de suport 24h",
+
+ partners_kicker: "Confiança de líders del sector",
+
+ mission_title_1: "Missió:",
+ mission_title_2: "Recuperació Express",
+ mission_sub: "Tres passos per convertir una pèrdua en una experiència premium.",
+ step1_title: "L’Hotel Registra",
+ step1_desc: "El personal registra l’objecte en ~30 segons amb l’opció de pujar una foto de l’objecte.",
+ step1_badge: "Sense formularis eterns",
+ step2_title: "Màgia Automàtica",
+ step2_desc: "L’hoste rep un correu amb un enllaç, introdueix l’adreça, veu la tarifa a l’instant i paga online (opció de pagament per l’hotel). Lostit genera l’etiqueta automàticament.",
+ step2_badge: "Notificacions + tracking",
+ step3_title: "Missió Complerta",
+ step3_desc: "DHL recull el paquet a recepció. L’objecte torna a casa amb enviament segur.",
+ step3_badge: "Seguretat i control",
+
+ solutions_kicker: "Solucions",
+ solutions_title: "Dissenyat per a hotels. Estimat pels hostes.",
+ solutions_sub: "",
+
+ hotel_badge: "<i class=\"fa-solid fa-hotel text-dhl\"></i> Hotel / Partner",
+ hotel_title: "Menys feina a recepció amb l’eina Lostit: súper intuïtiva, ràpida i optimitzada per reduir al màxim la feina del recepcionista.",
+ hotel_desc: "Registra l’objecte. L’hoste paga, rep l’etiqueta i DHL recull a l’hotel.",
+ hotel_stat1_label: "Alta i registre",
+ hotel_stat1_value: "~60 segons",
+ hotel_stat2_label: "Cost per a l’hotel",
+ hotel_stat2_value: "0€",
+ hotel_stat3_label: "Xat de suport",
+ hotel_stat3_value: "24H",
+ hotel_b1: "<b>Comunicació</b>: no cal comunicar-te amb el client, ni emails ni trucades.",
+ hotel_b2: "<b>Control</b>: tracking, notificacions i tot centralitzat.",
+ hotel_b3: "<b>La teva imatge</b>: converteixes un “problema” en un servei premium.",
+ hotel_btn_register: "<i class=\"fa-solid fa-user-plus mr-2\"></i> Registrar el meu hotel",
+ hotel_btn_demo: "<i class=\"fa-solid fa-circle-play mr-2 text-dhl\"></i> Veure demo",
+
+ guest_badge: "<i class=\"fa-solid fa-briefcase text-dhl\"></i> Hoste",
+ guest_title: "Recuperació ràpida.<span class=\"text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400\"> Sense embolics.</span>",
+ guest_desc: "T’avisem, pagues l’enviament i llest. Ho reps amb DHL Express amb seguiment.",
+ guest_stat1_label: "Entrega típica",
+ guest_stat1_value: "24–48h",
+ guest_stat2_label: "Transparència",
+ guest_stat2_value: "Tracking",
+ guest_stat3_label: "Xat de suport",
+ guest_stat3_value: "24H",
+ guest_b1: "<b>Pagament simple</b>: sense trucades rares ni correus eterns.",
+ guest_b2: "<b>Seguretat</b>: enviament amb partner global i opcions de cobertura.",
+ guest_b3: "<b>Velocitat</b>: el teu objecte torna ràpid a casa.",
+
+ dhl_title: "<span class=\"sm:whitespace-nowrap\">Logística d’elit amb el</span><br/><span class=\"relative inline-block sm:whitespace-nowrap\">Líder Global<span class=\"absolute left-0 right-0 -bottom-2 h-[5px] bg-[#D40511] rounded-full opacity-90\"></span></span><span class=\"text-black sm:whitespace-nowrap\">.</span>",
+ dhl_desc: "No fem servir missatgeries locals. El teu objecte viatja exclusivament per la xarxa de <b>DHL Express</b>. Seguretat màxima, traçabilitat total.",
+
+ logos_title: "Hotels que ja confien en Lostit",
+ logos_subtitle: "Cadenes i hotels independents a Espanya — i creixent.",
+ logos_badge: "+152 hotels registrats",
+ logos_note: "Logotips d’hotels i cadenes amb compte actiu a Lostit.",
+
+ reviews_title: "Valoracions del nostre servei",
+ review1_text: "Servei excel·lent, la web és molt senzilla d’utilitzar i l’atenció al client és molt resolutiva.",
+ review1_name: "Catalonia Rigoletto",
+ review1_role: "Recepció",
+ review2_text: "Per feina necessito fer molts enviaments i amb aquesta empresa tot és molt senzill i ràpid de gestionar. Porto més de 100 enviaments i, de moment, cap problema. Molt recomanable! A més, l’assistència telefònica és molt bona i sempre t’ajuden.",
+ review2_name: "Suites Avenue Luxe",
+ review2_role: "Javier Arlandiz",
+ review3_text: "100% recomanat, ràpid i fiable. Atenció i servei excel·lent.",
+ review3_name: "Hotel Calipolis Sitges 4*",
+ review3_role: "Eduardo Luque Murcia",
+
+ faq_title: "Preguntes freqüents",
+ faq_q1: "Quant triga la recollida?",
+ faq_a1: "Després del pagament, demanem recollida DHL a l’hotel. Normalment passa el següent dia laborable (segons zona i disponibilitat).",
+ faq_q2: "L’hotel paga alguna cosa?",
+ faq_a2: "No. 0€ per a l’hotel: alta, panell i automatització. L’hoste paga l’enviament quan demana la devolució.",
+ faq_q3: "Quins països cobreix DHL?",
+ faq_a3: "Enviem pràcticament a tot el món amb DHL Express. La tarifa es calcula segons el país de l’adreça de lliurament.",
+ faq_q4: "Què passa si no es pot recollir?",
+ faq_a4: "Reprogramem la recollida i t’avisem. Si hi ha incidències, el nostre suport ho gestiona amb tu.",
+ faq_q5: "Té cost per a l’hotel?",
+ faq_a5: "0€ per a l’hotel: alta, panell i automatització. L’hoste paga l’enviament quan demana la devolució.",
+ faq_q6: "Com es calcula l’idioma i les tarifes?",
+ faq_a6: "L’email i el checkout s’adapten al país de residència de l’hoste. La tarifa es calcula amb el país de l’adreça de lliurament.",
+ faq_q7: "Qui recull el paquet?",
+ faq_a7: "DHL recull el paquet a la recepció de l’hotel (únic transportista).",
+ faq_q8: "Compleix amb RGPD?",
+ faq_a8: "Sí. Demanem les dades mínimes per gestionar l’enviament i apliquem seguretat i control d’accés.",
+ faq_q9: "Puc començar avui?",
+ faq_a9: "Sí. Et registres en 30 segons i t’enviem sobres i caixes DHL (1–4) per començar.",
+ faq_q10: "Envieu caixes i sobres?",
+ faq_a10: "Sí. A l’onboarding enviem sobres i caixes gratuïtes perquè l’hotel pugui preparar els enviaments.",
+ faq_q11: "Què passa si l’hoste no paga?",
+ faq_a11: "No es genera l’etiqueta ni es demana la recollida fins que es completa el pagament. L’objecte es queda a l’hotel.",
+ faq_q12: "He de pesar o mesurar el paquet?",
+ faq_a12: "No. Seleccionas el tipus d’embalatge (sobre/caixa) i el sistema calcula la tarifa i genera l’etiqueta.",
+
+ footer_desc: "La manera moderna de gestionar objectes perduts amb un flux simple i logística global.",
+ footer_copy: "© 2024 Lostit Technologies. Tots els drets reservats.",
+ footer_note: ""
+ },
+ fr: {
+  nav_how: "Comment ça marche",
+  nav_solutions: "Solutions",
+  nav_partner: "Partenariat",
+  nav_privacy: "Confidentialité",
+  nav_register: "Inscrire mon hôtel",
+  nav_account: "Mon compte",
+  hero_kicker_full: "<span class=\"text-dhl font-extrabold\"><span class=\"text-white\">Lostit</span> : la solution pour renvoyer les objets oubliés.</span>",
+  hero_title_line1: "Le Super-héros des",
+  hero_title_line2: "Objets Oubliés",
+  hero_bullet1: "<span class=\"text-dhl font-semibold\">Hôtels:</span> <span class=\"text-gray-100 font-semibold\">sans contrat, sans frais et sans installation logicielle.</span>",
+  hero_bullet2: "Enregistrez l’objet en ligne en <span class=\"text-gray-100 font-semibold\">30s</span>. Sans appels, sans emails et sans mesurer ni peser les envois.",
+  hero_bullet3: "Tout est enregistré dans votre tableau de bord: <span class=\"text-gray-100 font-semibold\">statut de retour</span> + <span class=\"text-gray-100 font-semibold\">n° de suivi</span>.",
+  hero_bullet4: "Envois gérés avec <span class=\"text-dhl font-semibold\">DHL</span> <span class=\"text-white/70\">(n° 1 mondial de la logistique).</span>",
+  hero_bullet5: "<span class=\"text-gray-100 font-semibold\">Boîtes et enveloppes gratuites</span> pour les envois.",
+  cta_register: "<span class=\"flex items-center justify-center gap-2\"><i class=\"fa-solid fa-hotel\"></i> Inscrire mon hôtel <i class=\"fa-solid fa-arrow-right-long opacity-70 group-hover:translate-x-1 transition-transform\"></i></span><span class=\"block text-[11px] font-semibold text-black/70 mt-1 tracking-wide\">Gratuit · En 30s · Boîtes incluses</span>",
+  mini_1: "<i class=\"fa-solid fa-bolt text-green-500\"></i> 30s pour l’inscription",
+  mini_2: "<i class=\"fa-solid fa-circle-check text-green-500\"></i> 0€ coût hôtel",
+  mini_3: "<i class=\"fa-solid fa-box-open text-dhl\"></i> Boîtes d’envoi gratuites",
+  pill1_title: "Expédition uniquement avec DHL",
+  pill1_sub: "collecte à la réception",
+  pill2_title: "Livraison 24–48h *",
+  pill2_sub: "Étiquette automatique / N° de suivi",
+  pill3_title: "Chat support 24h",
+  partners_kicker: "La confiance des leaders du secteur",
+  mission_title_1: "Mission:",
+  mission_title_2: "Récupération Express",
+  mission_sub: "Trois étapes pour transformer une perte en une expérience premium.",
+  step1_title: "L’hôtel enregistre",
+  step1_desc: "Le personnel enregistre l’objet en ~30 secondes avec la possibilité d’ajouter une photo.",
+  step1_badge: "Sans formulaires interminables",
+  step2_title: "Magie automatique",
+  step2_desc: "Le voyageur reçoit un email avec un lien, saisit l’adresse, voit le tarif instantanément et paie en ligne (option de paiement par l’hôtel).",
+  step2_badge: "Notifications + suivi",
+  step3_title: "Mission accomplie",
+  step3_desc: "L’hôtel reçoit l’étiquette automatiquement. DHL collecte le colis à la réception. L’objet rentre à la maison avec un envoi sécurisé.",
+  step3_badge: "Sécurité et contrôle",
+  solutions_kicker: "Solutions",
+  solutions_title: "Conçu pour les hôtels. Adoré par les voyageurs.",
+  solutions_sub: "",
+  hotel_badge: "<i class=\"fa-solid fa-hotel text-dhl\"></i> Hôtel / Partenaire",
+  hotel_title: "Lostit : l’outil super intuitif, rapide et optimisé pour réduire complètement le travail du réceptionniste.",
+  hotel_desc: "",
+  hotel_stat1_label: "Inscription",
+  hotel_stat1_value: "~30 secondes",
+  hotel_stat2_label: "Coût pour l’hôtel",
+  hotel_stat2_value: "0€",
+  hotel_stat3_label: "Chat support",
+  hotel_stat3_value: "24H",
+  hotel_b1: "<b>Retour rapide</b>: sans appeler le client, sans lui envoyer un email et sans mesurer ni peser les envois.",
+  hotel_b2: "<b>Contrôle</b>: suivi, notifications et tout centralisé.",
+  hotel_b3: "<b>Votre image</b>: vous transformez un « problème » en un service premium.",
+  hotel_btn_register: "<i class=\"fa-solid fa-user-plus mr-2\"></i> Inscrire mon hôtel",
+  hotel_btn_demo: "<i class=\"fa-solid fa-circle-play mr-2 text-dhl\"></i> Voir la démo",
+  guest_badge: "<i class=\"fa-solid fa-briefcase text-dhl\"></i> Voyageur",
+  guest_title: "Récupération rapide.<span class=\"text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400\"> Sans tracas.</span>",
+  guest_desc: "On vous prévient, vous payez l’envoi, et c’est tout. Vous le recevez avec DHL Express et suivi.",
+  guest_stat1_label: "Livraison typique",
+  guest_stat1_value: "24–48h",
+  guest_stat2_label: "Transparence",
+  guest_stat2_value: "Suivi",
+  guest_stat3_label: "Chat support",
+  guest_stat3_value: "24H",
+  guest_b1: "<b>Paiement simple</b>: pas d’appels bizarres ni d’emails interminables.",
+  guest_b2: "<b>Sécurité</b>: expédition avec partenaire global et options de couverture.",
+  guest_b3: "<b>Vitesse</b>: votre objet rentre vite à la maison.",
+  dhl_title: "<span class=\"sm:whitespace-nowrap\">Logistique d’élite avec le</span><br/><span class=\"relative inline-block sm:whitespace-nowrap\">Leader Mondial<span class=\"absolute left-0 right-0 -bottom-2 h-[5px] bg-[#D40511] rounded-full opacity-90\"></span></span><span class=\"text-black sm:whitespace-nowrap\">.</span>",
+  dhl_desc: "Nous n’utilisons pas de transporteurs locaux. Votre objet voyage exclusivement sur le réseau <b>DHL Express</b>. Sécurité maximale, traçabilité totale.",
+  logos_title: "Des hôtels qui font déjà confiance à Lostit",
+  logos_subtitle: "Chaînes et hôtels indépendants en Espagne — et ça continue.",
+  logos_badge: "+152 hôtels enregistrés",
+  logos_note: "Logos d’hôtels et de chaînes avec un compte actif sur Lostit.",
+  reviews_title: "Avis sur notre service",
+  review1_text: "Service excellent, le site est très simple à utiliser et le support client est très efficace.",
+  review1_name: "Catalonia Rigoletto",
+  review1_role: "Réception",
+  review2_text: "Pour le travail, je dois faire beaucoup d’envois, et honnêtement avec cette entreprise tout est très simple et très rapide à gérer. J’ai déjà fait plus de 100 envois et jusqu’à présent il n’y a eu aucun problème. Super recommandé. En plus, l’assistance téléphonique est très bonne et ils t’aident toujours.",
+  review2_name: "Suites Avenue Luxe",
+  review2_role: "Javier Arlandiz",
+  review3_text: "100% recommandé, rapide et fiable. Attention et service excellents.",
+  review3_name: "Hotel Calipolis Sitges 4*",
+  review3_role: "Eduardo Luque Murcia",
+  faq_title: "Questions fréquentes",
+  faq_q1: "Combien de temps pour la collecte ?",
+  faq_a1: "Après le paiement, nous demandons une collecte DHL à l’hôtel. En général, elle a lieu le jour ouvré suivant (selon zone et disponibilité).",
+  faq_q2: "L’hôtel paie quelque chose ?",
+  faq_a2: "Non. 0€ pour l’hôtel : inscription, tableau de bord et flux automatisé. L’envoi est payé par le voyageur lorsqu’il demande le retour.",
+  faq_q3: "Quels pays DHL couvre-t-il ?",
+  faq_a3: "Nous expédions presque partout dans le monde avec DHL Express. Le tarif est calculé selon le pays de l’adresse de livraison.",
+  faq_q4: "Que se passe-t-il si la collecte n’est pas possible ?",
+  faq_a4: "Nous replanifions la collecte et nous vous prévenons. En cas d’incident, notre support le gère avec vous.",
+  faq_q5: "Y a-t-il un coût pour l’hôtel ?",
+  faq_a5: "0€ pour l’hôtel : inscription, tableau de bord et flux automatisé. Le voyageur paie l’envoi lorsqu’il demande le retour.",
+  faq_q6: "Comment sont calculés la langue et les tarifs ?",
+  faq_a6: "L’email et le checkout s’adaptent au pays de résidence du voyageur. Le tarif est calculé avec le pays de l’adresse de livraison.",
+  faq_q7: "Qui récupère le colis ?",
+  faq_a7: "DHL récupère le colis à la réception de l’hôtel (notre seul transporteur).",
+  faq_q8: "Conforme au RGPD ?",
+  faq_a8: "Oui. Nous demandons uniquement les données nécessaires à l’expédition et appliquons des mesures de sécurité et un accès limité.",
+  faq_q9: "Puis-je commencer aujourd’hui ?",
+  faq_a9: "Oui. Inscription en 30 secondes et nous envoyons des enveloppes et des boîtes DHL (1–4) pour démarrer.",
+  faq_q10: "Envoyez-vous des boîtes et des enveloppes ?",
+  faq_a10: "Oui. Lors de l’onboarding, nous envoyons des enveloppes et des boîtes gratuites pour que l’hôtel puisse préparer les envois.",
+  faq_q11: "Et si le voyageur ne paie pas ?",
+  faq_a11: "Aucune étiquette n’est créée et aucune collecte n’est demandée tant que le paiement n’est pas effectué. L’objet reste à l’hôtel.",
+  faq_q12: "Dois-je peser ou mesurer le colis ?",
+  faq_a12: "Non. Vous choisissez le type d’emballage (enveloppe/boîte) et le système calcule le tarif et génère l’étiquette.",
+  footer_desc: "La façon moderne de gérer les objets perdus avec un flux simple et une logistique mondiale.",
+  footer_copy: "© 2024 Lostit Technologies. Tous droits réservés.",
+  footer_note: ""
+ },
+ pt: {
+  nav_how: "Como funciona",
+  nav_solutions: "Soluções",
+  nav_partner: "Parceria",
+  nav_privacy: "Privacidade",
+  nav_register: "Registar o meu hotel",
+  nav_account: "A minha conta",
+  hero_kicker_full: "<span class=\"text-dhl font-extrabold\"><span class=\"text-white\">Lostit</span>: a solução para devolver objetos esquecidos.</span>",
+  hero_title_line1: "O Super-herói dos",
+  hero_title_line2: "Objetos Esquecidos",
+  hero_bullet1: "<span class=\"text-dhl font-semibold\">Hotéis:</span> <span class=\"text-gray-100 font-semibold\">sem contrato, sem custos e sem instalação de software.</span>",
+  hero_bullet2: "Regista o objeto online em <span class=\"text-gray-100 font-semibold\">30s</span>. Sem chamadas, sem emails e sem medir nem pesar os envios.",
+  hero_bullet3: "Fica tudo registado no teu painel: <span class=\"text-gray-100 font-semibold\">estado de devolução</span> + <span class=\"text-gray-100 font-semibold\">nº de tracking</span>.",
+  hero_bullet4: "Envios geridos com <span class=\"text-dhl font-semibold\">DHL</span> <span class=\"text-white/70\">(nº 1 do mundo em logística).</span>",
+  hero_bullet5: "<span class=\"text-gray-100 font-semibold\">Caixas e envelopes grátis</span> para os envios.",
+  cta_register: "<span class=\"flex items-center justify-center gap-2\"><i class=\"fa-solid fa-hotel\"></i> Registar o meu hotel <i class=\"fa-solid fa-arrow-right-long opacity-70 group-hover:translate-x-1 transition-transform\"></i></span><span class=\"block text-[11px] font-semibold text-black/70 mt-1 tracking-wide\">Grátis · Em 30s · Caixas incluídas</span>",
+  mini_1: "<i class=\"fa-solid fa-bolt text-green-500\"></i> 30s para registo",
+  mini_2: "<i class=\"fa-solid fa-circle-check text-green-500\"></i> 0€ custo hotel",
+  mini_3: "<i class=\"fa-solid fa-box-open text-dhl\"></i> Caixas de envio grátis",
+  pill1_title: "Envio apenas com DHL",
+  pill1_sub: "recolha na receção",
+  pill2_title: "Entrega 24–48h *",
+  pill2_sub: "Etiqueta automática / Nº Tracking",
+  pill3_title: "Chat de suporte 24h",
+  partners_kicker: "A confiança dos líderes do setor",
+  mission_title_1: "Missão:",
+  mission_title_2: "Recuperação Express",
+  mission_sub: "Três passos para transformar uma perda numa experiência premium.",
+  step1_title: "O hotel regista",
+  step1_desc: "A equipa regista o objeto em ~30 segundos com a opção de carregar uma foto.",
+  step1_badge: "Sem formulários eternos",
+  step2_title: "Magia automática",
+  step2_desc: "O hóspede recebe um email com um link, introduz a morada, vê o preço na hora e paga online (opção de pagamento pelo hotel).",
+  step2_badge: "Notificações + tracking",
+  step3_title: "Missão cumprida",
+  step3_desc: "O hotel recebe a etiqueta automaticamente. A DHL recolhe o pacote na receção. O objeto volta a casa com envio seguro.",
+  step3_badge: "Segurança e controlo",
+  solutions_kicker: "Soluções",
+  solutions_title: "Feito para hotéis. Adorado por hóspedes.",
+  solutions_sub: "",
+  hotel_badge: "<i class=\"fa-solid fa-hotel text-dhl\"></i> Hotel / Parceiro",
+  hotel_title: "Lostit: a ferramenta super intuitiva, rápida e otimizada para reduzir por completo o trabalho da receção.",
+  hotel_desc: "",
+  hotel_stat1_label: "Registo",
+  hotel_stat1_value: "~30 segundos",
+  hotel_stat2_label: "Custo para o hotel",
+  hotel_stat2_value: "0€",
+  hotel_stat3_label: "Chat de suporte",
+  hotel_stat3_value: "24H",
+  hotel_b1: "<b>Devolução rápida</b>: sem ligar ao cliente, sem lhe enviar um email e sem medir nem pesar os envios.",
+  hotel_b2: "<b>Controlo</b>: tracking, notificações e tudo centralizado.",
+  hotel_b3: "<b>A tua imagem</b>: transformas um “problema” num serviço premium.",
+  hotel_btn_register: "<i class=\"fa-solid fa-user-plus mr-2\"></i> Registar o meu hotel",
+  hotel_btn_demo: "<i class=\"fa-solid fa-circle-play mr-2 text-dhl\"></i> Ver demo",
+  guest_badge: "<i class=\"fa-solid fa-briefcase text-dhl\"></i> Hóspede",
+  guest_title: "Recuperação rápida.<span class=\"text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400\"> Sem complicações.</span>",
+  guest_desc: "Avisamos-te, pagas o envio e está feito. Recebes com DHL Express com tracking.",
+  guest_stat1_label: "Entrega típica",
+  guest_stat1_value: "24–48h",
+  guest_stat2_label: "Transparência",
+  guest_stat2_value: "Tracking",
+  guest_stat3_label: "Chat de suporte",
+  guest_stat3_value: "24H",
+  guest_b1: "<b>Pagamento simples</b>: sem chamadas estranhas nem emails eternos.",
+  guest_b2: "<b>Segurança</b>: envio com parceiro global e opções de cobertura.",
+  guest_b3: "<b>Velocidade</b>: o teu objeto volta rápido a casa.",
+  dhl_title: "<span class=\"sm:whitespace-nowrap\">Logística de elite com o</span><br/><span class=\"relative inline-block sm:whitespace-nowrap\">Líder Global<span class=\"absolute left-0 right-0 -bottom-2 h-[5px] bg-[#D40511] rounded-full opacity-90\"></span></span><span class=\"text-black sm:whitespace-nowrap\">.</span>",
+  dhl_desc: "Não usamos transportadoras locais. O teu objeto viaja exclusivamente na rede <b>DHL Express</b>. Máxima segurança, rastreio total.",
+  logos_title: "Hotéis que já confiam no Lostit",
+  logos_subtitle: "Cadeias e hotéis independentes em Espanha — e a crescer.",
+  logos_badge: "+152 hotéis registados",
+  logos_note: "Logos de hotéis e cadeias com conta ativa no Lostit.",
+  reviews_title: "Avaliações do nosso serviço",
+  review1_text: "Serviço excelente, o site é muito fácil de usar e o apoio ao cliente é muito eficaz.",
+  review1_name: "Catalonia Rigoletto",
+  review1_role: "Receção",
+  review2_text: "Por trabalho preciso de fazer muitos envios e, sinceramente, com esta empresa tudo é muito simples e muito rápido de gerir. Já fiz mais de 100 envios e, até agora, não houve qualquer problema. Super recomendável. Além disso, o apoio telefónico é muito bom e ajudam sempre.",
+  review2_name: "Suites Avenue Luxe",
+  review2_role: "Javier Arlandiz",
+  review3_text: "100% recomendado, rápido e fiável. Atendimento e serviço excelentes.",
+  review3_name: "Hotel Calipolis Sitges 4*",
+  review3_role: "Eduardo Luque Murcia",
+  faq_title: "Perguntas frequentes",
+  faq_q1: "Quanto tempo demora a recolha?",
+  faq_a1: "Após o pagamento, pedimos a recolha DHL no hotel. Normalmente acontece no dia útil seguinte (dependendo da zona e disponibilidade).",
+  faq_q2: "O hotel paga alguma coisa?",
+  faq_a2: "Não. 0€ para o hotel: registo, painel e fluxo automatizado. O envio é pago pelo hóspede quando pede a devolução.",
+  faq_q3: "Que países a DHL cobre?",
+  faq_a3: "Enviamos para praticamente todo o mundo com DHL Express. A tarifa é calculada conforme o país da morada de entrega.",
+  faq_q4: "E se não for possível recolher?",
+  faq_a4: "Reagendamos a recolha e avisamos-te. Se houver incidências, o nosso suporte trata contigo.",
+  faq_q5: "Há custo para o hotel?",
+  faq_a5: "0€ para o hotel: registo, painel e fluxo automatizado. O hóspede paga o envio quando pede a devolução.",
+  faq_q6: "Como se calcula o idioma e as tarifas?",
+  faq_a6: "O email e o checkout adaptam-se ao país de residência do hóspede. A tarifa é calculada com o país da morada de entrega.",
+  faq_q7: "Quem recolhe o pacote?",
+  faq_a7: "A DHL recolhe o pacote na receção do hotel (o nosso único transportador).",
+  faq_q8: "Cumpre o RGPD?",
+  faq_a8: "Sim. Pedimos apenas os dados mínimos para gerir o envio e aplicamos medidas de segurança e acesso limitado.",
+  faq_q9: "Posso começar hoje?",
+  faq_a9: "Sim. Registas-te em 30 segundos e enviamos envelopes e caixas DHL (1–4) para começar.",
+  faq_q10: "Enviam caixas e envelopes?",
+  faq_a10: "Sim. No onboarding enviamos envelopes e caixas gratuitas para que o hotel possa preparar os envios.",
+  faq_q11: "E se o hóspede não pagar?",
+  faq_a11: "Não é criada a etiqueta nem é pedida a recolha até o pagamento estar concluído. O objeto fica no hotel.",
+  faq_q12: "Tenho de pesar ou medir o pacote?",
+  faq_a12: "Não. Escolhes o tipo de embalagem (envelope/caixa) e o sistema calcula a tarifa e gera a etiqueta.",
+  footer_desc: "A forma moderna de gerir objetos perdidos com um fluxo simples e logística global.",
+  footer_copy: "© 2024 Lostit Technologies. Todos os direitos reservados.",
+  footer_note: ""
+ }
+ };
+
+ function applyLang(lang){
+ document.documentElement.setAttribute('lang', lang);
+ document.querySelectorAll('.lang-btn').forEach(b=>{
+ b.setAttribute('data-active', b.getAttribute('data-lang')===lang ? 'true':'false');
+ });
+document.querySelectorAll('[data-i18n]').forEach(el=>{
+ const key = el.getAttribute('data-i18n');
+ const val = (T[lang] && T[lang][key]) ? T[lang][key] : (T.es[key] || "");
+ if (val.indexOf('<') !== -1) el.innerHTML = val;
+ else el.textContent = val;
+ });
+ syncLangDropdown(lang);
+ try{ localStorage.setItem('lostit_lang', lang); }catch(e){}
+ }
+
+ // --- Custom language dropdown (ES / EN / CAT) ---
+ const LANG_LABEL = { es: 'ES', en: 'EN', ca: 'CAT', fr: 'FR', pt: 'PT' };
+
+ function closeAllLangMenus(){
+ document.querySelectorAll('[data-lang-dropdown] .lang-dd-menu').forEach(m=> m.classList.add('hidden'));
+ document.querySelectorAll('[data-lang-dropdown] .lang-dd-trigger').forEach(b=> b.setAttribute('aria-expanded','false'));
+ }
+
+ function syncLangDropdown(lang){
+ const label = LANG_LABEL[lang] || 'ES';
+ document.querySelectorAll('[data-lang-dropdown] .lang-dd-label').forEach(el=> { el.textContent = label; });
+ document.querySelectorAll('[data-lang-dropdown] .lang-dd-item').forEach(btn=>{
+ const isActive = btn.getAttribute('data-lang') === lang;
+ btn.classList.toggle('bg-white/10', isActive);
+ btn.classList.toggle('text-white', isActive);
+ });
+ }
+
+ function initLangDropdown(){
+ document.querySelectorAll('[data-lang-dropdown]').forEach(dd=>{
+ const trigger = dd.querySelector('.lang-dd-trigger');
+ const menu = dd.querySelector('.lang-dd-menu');
+ if(!trigger || !menu) return;
+
+ trigger.addEventListener('click', (e)=>{
+ e.preventDefault();
+ e.stopPropagation();
+ const isOpen = !menu.classList.contains('hidden');
+ closeAllLangMenus();
+ if(!isOpen){
+ menu.classList.remove('hidden');
+ trigger.setAttribute('aria-expanded','true');
+ }
+ });
+
+ dd.querySelectorAll('.lang-dd-item').forEach(item=>{
+ item.addEventListener('click', (e)=>{
+ e.preventDefault();
+ e.stopPropagation();
+ const lang = item.getAttribute('data-lang');
+ if(lang) applyLang(lang);
+ closeAllLangMenus();
+ });
+ });
+ });
+
+ document.addEventListener('click', closeAllLangMenus);
+ document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeAllLangMenus(); });
+ }
+
+ initLangDropdown();
+
+ document.querySelectorAll('.lang-btn').forEach(btn=>{
+ btn.addEventListener('click', ()=> applyLang(btn.getAttribute('data-lang')));
+ });
+let saved = null;
+ try{ saved = localStorage.getItem('lostit_lang'); }catch(e){}
+ if(!saved){
+ const nav = (navigator.language || navigator.userLanguage || '').toLowerCase();
+ if(nav.startsWith('ca')) saved = 'ca';
+ else if(nav.startsWith('fr')) saved = 'fr';
+ else if(nav.startsWith('pt')) saved = 'pt';
+ else if(nav.startsWith('en')) saved = 'en';
+ else saved = 'es';
+ }
+ if(!T[saved]) saved='es';
+ applyLang(saved);
+})();</script>
+
+<script>
+  // Logo fallbacks: Clearbit -> Google favicon -> text
+  window.__lostitLogoFallback = function(img){
+    try{
+      var domain = img.getAttribute('data-domain');
+      if(!domain) return;
+
+      if(img.dataset && img.dataset.fallback === '1'){
+        var wrap = img.closest('[data-logo-wrap]');
+        if(wrap){
+          var name = wrap.getAttribute('data-name') || domain;
+          wrap.innerHTML = '<span class="text-slate-900 text-sm font-semibold tracking-tight">' + name + '</span>';
+        }
+        return;
+      }
+
+      if(img.dataset) img.dataset.fallback = '1';
+      img.src = 'https://www.google.com/s2/favicons?sz=128&domain_url=https://' + domain;
+      img.classList.add('h-10','w-10','rounded-xl');
+      img.classList.remove('w-auto','object-contain','max-h-9','sm:max-h-10');
+    }catch(e){}
+  };
+</script>
+</body>
+</html>

@@ -1863,30 +1863,52 @@
 <div class="h-14"></div>
 </div>
 </main>
-<footer class="relative bg-[#0b0718] py-12 text-gray-400 border-t border-white/5">
+<footer class="relative bg-[#0b0718] py-16 text-gray-400 border-t border-white/5">
 <div class="absolute left-[10%] right-[10%] top-0 h-[2px] bg-gradient-to-r from-transparent via-[rgba(255,204,0,0.35)] to-transparent"></div>
 <div class="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-10">
-<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+
+<!-- Footer grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
+
+<!-- Col 1: Brand -->
 <div>
 <div class="flex items-center gap-3 font-bold text-2xl tracking-tight text-white">
 <div class="w-4 h-4 rounded-full bg-dhl shadow-[0_0_15px_#FFCC00]"></div>
- Lostit
- </div>
-<p class="mt-3 text-sm text-white/45 max-w-md" data-i18n="footer_desc">
- La forma moderna de gestionar objetos perdidos con un flujo simple y logística global.
- </p>
+Lostit
 </div>
-<div class="flex flex-wrap gap-x-8 gap-y-3 text-sm">
-<a class="text-white/65 hover:text-white transition" data-i18n="nav_how" href="#como-funciona">Cómo funciona</a>
-<a class="text-white/65 hover:text-white transition" data-i18n="nav_solutions" href="#targets">Soluciones</a>
-<a class="text-white/65 hover:text-white transition" data-i18n="nav_partner" href="#dhl">Partnership</a>
-<a class="text-white/65 hover:text-white transition" data-i18n="nav_privacy" href="#">Privacidad</a>
+<p class="mt-3 text-sm text-white/45 max-w-xs" data-i18n="footer_desc">
+La forma moderna de gestionar objetos perdidos con un flujo simple y logística global.
+</p>
+</div>
+
+<!-- Col 2: Links -->
+<div>
+<h4 class="text-white font-semibold text-sm uppercase tracking-wider mb-4" data-i18n="footer_links_title">Enlaces</h4>
+<nav class="flex flex-col gap-3 text-sm">
+<a class="text-white/55 hover:text-dhl transition" data-i18n="nav_how" href="#como-funciona">Cómo funciona</a>
+<a class="text-white/55 hover:text-dhl transition" data-i18n="nav_solutions" href="#targets">Soluciones</a>
+<a class="text-white/55 hover:text-dhl transition" data-i18n="nav_partner" href="#dhl">Partnership</a>
+<a class="text-white/55 hover:text-dhl transition" data-i18n="nav_privacy" href="#">Privacidad</a>
+</nav>
+</div>
+
+<!-- Col 3: Contact -->
+<div>
+<h4 class="text-white font-semibold text-sm uppercase tracking-wider mb-4" data-i18n="footer_contact_title">Contacto</h4>
+<div class="flex flex-col gap-3 text-sm">
+<span class="flex items-center gap-3 text-white/55"><i class="fa-solid fa-location-dot text-dhl text-xs w-4 text-center"></i> Calle Bruc 168 3º3º, 08037 Barcelona</span>
+<a href="tel:+34643944714" class="flex items-center gap-3 text-white/55 hover:text-dhl transition"><i class="fa-solid fa-phone text-dhl text-xs w-4 text-center"></i> +34 643 94 47 14</a>
+<a href="mailto:info@lostit.es" class="flex items-center gap-3 text-white/55 hover:text-dhl transition"><i class="fa-solid fa-envelope text-dhl text-xs w-4 text-center"></i> info@lostit.es</a>
 </div>
 </div>
-<div class="mt-10 divider-soft"></div>
-<div class="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-white/40">
+
+</div>
+
+<!-- Divider + Copyright -->
+<div class="mt-12 border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/35">
 <p data-i18n="footer_copy">© <span id="year">2025</span> Lostit Technologies. Todos los derechos reservados.</p>
 </div>
+
 </div>
 </footer>
 <script>
@@ -2034,6 +2056,8 @@
  faq_a12: "No. Seleccionas el tipo de embalaje (sobre/caja) y el sistema calcula la tarifa y genera la etiqueta.",
 
  footer_desc: "La forma moderna de gestionar objetos perdidos con un flujo simple y logística global.",
+ footer_links_title: "Enlaces",
+ footer_contact_title: "Contacto",
  footer_copy: "© <span id=\"year\">2025</span> Lostit Technologies. Todos los derechos reservados.",
  footer_note: ""
  },
@@ -2161,6 +2185,8 @@
  faq_a12: "No. Select the packaging type (envelope/box) and the system calculates the price and generates the label.",
 
  footer_desc: "A modern way to manage lost & found with a simple flow and global logistics.",
+ footer_links_title: "Links",
+ footer_contact_title: "Contact",
  footer_copy: "© <span id=\"year\">2025</span> Lostit Technologies. All rights reserved.",
  footer_note: ""
  },
@@ -2288,6 +2314,8 @@
  faq_a12: "No. Seleccionas el tipus d’embalatge (sobre/caixa) i el sistema calcula la tarifa i genera l’etiqueta.",
 
  footer_desc: "La manera moderna de gestionar objectes perduts amb un flux simple i logística global.",
+ footer_links_title: "Enllaços",
+ footer_contact_title: "Contacte",
  footer_copy: "© <span id=\"year\">2025</span> Lostit Technologies. Tots els drets reservats.",
  footer_note: ""
  },
@@ -2399,6 +2427,8 @@
   faq_q12: "Dois-je peser ou mesurer le colis ?",
   faq_a12: "Non. Vous choisissez le type d’emballage (enveloppe/boîte) et le système calcule le tarif et génère l’étiquette.",
   footer_desc: "La façon moderne de gérer les objets perdus avec un flux simple et une logistique mondiale.",
+  footer_links_title: "Liens",
+  footer_contact_title: "Contact",
   footer_copy: "© <span id=\"year\">2025</span> Lostit Technologies. Tous droits réservés.",
   footer_note: ""
  },
@@ -2510,6 +2540,8 @@
   faq_q12: "Tenho de pesar ou medir o pacote?",
   faq_a12: "Não. Escolhes o tipo de embalagem (envelope/caixa) e o sistema calcula a tarifa e gera a etiqueta.",
   footer_desc: "A forma moderna de gerir objetos perdidos com um fluxo simples e logística global.",
+  footer_links_title: "Ligações",
+  footer_contact_title: "Contacto",
   footer_copy: "© <span id=\"year\">2025</span> Lostit Technologies. Todos os direitos reservados.",
   footer_note: ""
  }
